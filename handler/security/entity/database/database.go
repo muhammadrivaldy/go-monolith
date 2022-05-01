@@ -35,14 +35,14 @@ func NewDatabase(conf config.Configuration) (security.Database, error) {
 	}
 
 	m, err := migrate.NewWithDatabaseInstance(
-		"file://../handler/security/entity/database/migrations",
+		"file://./handler/security/entity/database/migrations",
 		conf.Database.Schema.Security,
 		driver)
 	if err != nil {
 		return nil, err
 	}
 
-	m.Steps(1)
+	m.Up()
 
 	clientGorm, err := goutil.NewGorm(clientMysql, "mysql", goutil.LoggerSilent)
 	if err != nil {
