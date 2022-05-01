@@ -39,12 +39,11 @@ func NewEndpoint(
 
 	// declare the endpoint
 	const rootEndpoint = "/api/v1/health"
-	var healthService = payload.RegisterAPIRequest{Name: "Health Service", Endpoint: rootEndpoint + "/service", Method: http.MethodGet, ServiceID: serviceID}
-	var healthDB = payload.RegisterAPIRequest{Name: "Health DB", Endpoint: rootEndpoint + "/db", Method: http.MethodGet, ServiceID: serviceID}
+	var health = payload.RegisterAPIRequest{Name: "Health", Endpoint: rootEndpoint, Method: http.MethodGet, ServiceID: serviceID}
 
 	// append data apis
 	var APIs []*payload.RegisterAPIRequest
-	APIs = append(APIs, &healthService, &healthDB)
+	APIs = append(APIs, &health)
 
 	// asynchronous with wg
 	var wg sync.WaitGroup
@@ -58,8 +57,7 @@ func NewEndpoint(
 	wg.Wait()
 
 	// route the endpoint
-	engine.Handle(healthService.Method, healthService.Endpoint, edp.HealthService)
-	engine.Handle(healthDB.Method, healthDB.Endpoint, edp.HealthDB)
+	engine.Handle(health.Method, health.Endpoint, edp.Health)
 
 	// send result
 	return nil
