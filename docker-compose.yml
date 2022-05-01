@@ -1,0 +1,71 @@
+version: "3.9"
+services:
+  db:
+    container_name: db-mysql
+    image: mysql:latest
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      # MYSQL_USER: mediotea
+      # MYSQL_PASSWORD: "se^5#Es27*u"
+      # MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+    volumes:
+      - mysql-likegram:/var/lib/mysql
+    networks:
+      - server-side
+
+  adminer:
+    container_name: db-adminer
+    image: adminer:latest
+    restart: always
+    depends_on:
+      - db
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+    ports:
+      - 5050:8080
+    networks:
+      - server-side
+
+  likegram:
+    container_name: likegram-service
+    image: umkm:latest
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    environment:
+      DB_ADDRESS: db
+      DB_USER: root
+      DB_PASSWORD: root
+      PATH_CONF: ../config
+      FILE_CONF: local.conf
+    depends_on:
+      - db
+      - adminer
+      - redis
+    networks:
+      - server-side
+
+  redis:
+    container_name: db-redis
+    image: redis:6.2.4
+    restart: always
+    ports:
+      - 6379:6379
+    volumes:
+      - redis-likegram:/data
+    networks:
+      - server-side
+
+networks:
+  server-side:
+
+volumes:
+  mysql-likegram:
+  redis-likegram:
