@@ -7,8 +7,9 @@ require (
 	github.com/gin-gonic/gin v1.7.4
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/golang-migrate/migrate v3.5.4+incompatible
-	github.com/muhammadrivaldy/go-util v0.3.5
+	github.com/muhammadrivaldy/go-util v0.3.6
 	github.com/robfig/cron/v3 v3.0.1
+	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
 	gorm.io/gorm v1.21.16
 )
 
@@ -43,7 +44,6 @@ require (
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
 	go.uber.org/zap v1.18.1 // indirect
-	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2 // indirect
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
 	golang.org/x/sys v0.0.0-20210426230700-d19ff857e887 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect

@@ -61,5 +61,4 @@ func NewEndpoint(
 
 	// send result
 	return nil
-
 }

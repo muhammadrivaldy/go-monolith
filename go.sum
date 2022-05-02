@@ -473,8 +473,8 @@ github.com/modern-go/reflect2 v0.0.0-20180701023420-4b7aa43c6742/go.mod h1:bx2lN
 github.com/modern-go/reflect2 v1.0.1 h1:9f412s+6RmYXLWZSEzVVgPGK7C2PphHj5RJrvfx9AWI=
 github.com/modern-go/reflect2 v1.0.1/go.mod h1:bx2lNnkwVCuqBIxFjflWJWanXIb3RllmbCylyMrvgv0=
 github.com/mrunalp/fileutils v0.5.0/go.mod h1:M1WthSahJixYnrXQl/DFQuteStB1weuxD2QJNHXfbSQ=
-github.com/muhammadrivaldy/go-util v0.3.5 h1:6SDu4/5P17oBSQvuHBwDj/symGKtMIhH69uh2DNVwzg=
-github.com/muhammadrivaldy/go-util v0.3.5/go.mod h1:gsg+lHp3ZxChwVs3VtXr/ijQ6QhVsfcAxjgklGyN6Z0=
+github.com/muhammadrivaldy/go-util v0.3.6 h1:fpvf3iKdQ7HNBYpwyRRHaUoFal2eH0hjVbi5EuYRMC0=
+github.com/muhammadrivaldy/go-util v0.3.6/go.mod h1:gsg+lHp3ZxChwVs3VtXr/ijQ6QhVsfcAxjgklGyN6Z0=
 github.com/munnerz/goautoneg v0.0.0-20120707110453-a547fc61f48d/go.mod h1:+n7T8mK8HuQTcFwEeznm/DIxMOiR9yIdICNftLE1DvQ=
 github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822/go.mod h1:+n7T8mK8HuQTcFwEeznm/DIxMOiR9yIdICNftLE1DvQ=
 github.com/mwitkow/go-conntrack v0.0.0-20161129095857-cc309e4a2223/go.mod h1:qRWi+5nqEBWmkhHvq77mSJWrCKwh8bxhgT7d/eI7P4U=

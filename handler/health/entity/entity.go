@@ -15,5 +15,4 @@ func NewEntity(conf config.Configuration) (health.Entity, error) {
 
 	return health.Entity{
 		Database: database}, nil
-
 }
