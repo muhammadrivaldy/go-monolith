@@ -7,10 +7,11 @@ import (
 	"context"
 )
 
-// UseCase is a interface for layer business
+// ISecurityUseCase is a interface for layer business
 type ISecurityUseCase interface {
-	RegisterApi(req *payload.RegisterApiRequest)
+	RegisterApi(ctx context.Context, req *payload.RegisterApiRequest)
 	RegisterService(ctx context.Context, serviceName string) (id int, errs util.Error)
+	ValidateAccessUser(ctx context.Context, apiID int, userTypeID int) (bool, error)
 }
 
 type IApiRepo interface {

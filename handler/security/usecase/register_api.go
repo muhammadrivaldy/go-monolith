@@ -10,12 +10,12 @@ import (
 	"gorm.io/gorm"
 )
 
-func (u *useCase) RegisterApi(req *payload.RegisterApiRequest) {
+func (u *useCase) RegisterApi(ctx context.Context, req *payload.RegisterApiRequest) {
 
 	// get info api by name
 	resApi, err := u.securityEntity.ApiRepo.SelectApiByName(req.Name)
 	if err != nil && err != gorm.ErrRecordNotFound {
-		logs.Logging.Error(context.Background(), err)
+		logs.Logging.Error(ctx, err)
 		return
 	}
 
@@ -23,7 +23,7 @@ func (u *useCase) RegisterApi(req *payload.RegisterApiRequest) {
 	if resApi.ID == 0 {
 		resApi, err = u.securityEntity.ApiRepo.SelectApiByEndpoint(req.Endpoint)
 		if err != nil && err != gorm.ErrRecordNotFound {
-			logs.Logging.Error(context.Background(), err)
+			logs.Logging.Error(ctx, err)
 			return
 		}
 	}
@@ -40,7 +40,7 @@ func (u *useCase) RegisterApi(req *payload.RegisterApiRequest) {
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now()})
 		if err != nil {
-			logs.Logging.Error(context.Background(), err)
+			logs.Logging.Error(ctx, err)
 			return
 		}
 	} else {
@@ -52,7 +52,7 @@ func (u *useCase) RegisterApi(req *payload.RegisterApiRequest) {
 			Endpoint:  req.Endpoint,
 			Method:    req.Method,
 			ServiceID: req.ServiceID}); err != nil {
-			logs.Logging.Error(context.Background(), err)
+			logs.Logging.Error(ctx, err)
 			return
 		}
 	}

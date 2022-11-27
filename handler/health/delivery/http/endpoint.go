@@ -46,7 +46,7 @@ func NewEndpoint(
 
 	// register the apis
 	for _, i := range Apis {
-		useCaseSecurity.RegisterApi(i)
+		useCaseSecurity.RegisterApi(context.TODO(), i)
 	}
 
 	// route the endpoint
