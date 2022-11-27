@@ -6,7 +6,6 @@ import (
 	"backend/handler/security/payload"
 	"context"
 	"net/http"
-	"sync"
 
 	"github.com/gin-gonic/gin"
 	goutil "github.com/muhammadrivaldy/go-util"
@@ -45,16 +44,10 @@ func NewEndpoint(
 	var APIs []*payload.RegisterAPIRequest
 	APIs = append(APIs, &health)
 
-	// asynchronous with wg
-	var wg sync.WaitGroup
-
 	// register the apis
 	for _, i := range APIs {
-		go usec.RegisterAPI(&wg, i)
+		usec.RegisterAPI(i)
 	}
-
-	// waiting register api
-	wg.Wait()
 
 	// route the endpoint
 	engine.Handle(health.Method, health.Endpoint, edp.Health)

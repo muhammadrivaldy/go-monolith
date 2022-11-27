@@ -5,12 +5,11 @@ import (
 	"backend/handler/security/payload"
 	"backend/util"
 	"context"
-	"sync"
 )
 
 // Usecase is a interface for layer business
 type Usecase interface {
-	RegisterAPI(wg *sync.WaitGroup, req *payload.RegisterAPIRequest)
+	RegisterAPI(req *payload.RegisterAPIRequest)
 	RegisterService(ctx context.Context, serviceName string) (id int, errs util.Error)
 }
 

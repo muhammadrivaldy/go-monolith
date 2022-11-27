@@ -4,16 +4,12 @@ import (
 	"backend/handler/security/models"
 	"backend/handler/security/payload"
 	"context"
-	"sync"
 	"time"
 
 	"gorm.io/gorm"
 )
 
-func (u *usecase) RegisterAPI(wg *sync.WaitGroup, req *payload.RegisterAPIRequest) {
-
-	// add waitgroup for information process is running
-	wg.Add(1)
+func (u *usecase) RegisterAPI(req *payload.RegisterAPIRequest) {
 
 	// get info api by name
 	resAPI, err := u.securityEnti.SelectAPIByName(req.Name)
@@ -62,7 +58,4 @@ func (u *usecase) RegisterAPI(wg *sync.WaitGroup, req *payload.RegisterAPIReques
 
 	// override the id of api
 	req.ID = resAPI.ID
-
-	// send waitgroup is process done
-	wg.Done()
 }
