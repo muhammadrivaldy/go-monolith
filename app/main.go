@@ -2,10 +2,12 @@ package main
 
 import (
 	"backend/config"
+	"backend/logs"
 	"context"
 	"fmt"
 	"io"
 	"os"
+	"time"
 
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
@@ -26,12 +28,11 @@ func main() {
 
 	// declare variable
 	var err error
-	var logs goutil.Logs
 
 	// logging
 	var osLog *os.File
 	defer osLog.Close()
-	osLog, err = goutil.OpenFile("./log", filenameLog())
+	osLog, err = goutil.OpenFile("./logs", filenameLog())
 	if err != nil {
 		panic(err)
 	}
@@ -42,12 +43,12 @@ func main() {
 	// cron for create a log file every day
 	c := cron.New()
 	c.AddFunc("@midnight", func() {
-		osLogNewest, err := goutil.OpenFileNewest(osLog, "./log", filenameLog())
+		osLogNewest, err := goutil.OpenFileNewest(osLog, "./logs", filenameLog())
 		if err != nil {
 			return
 		}
 
-		logs.Config(osLogNewest)
+		logs.Logging.Config(osLogNewest)
 		gin.DefaultWriter = io.Writer(osLogNewest)
 		osLog = osLogNewest
 	})
@@ -67,24 +68,24 @@ func main() {
 	}
 
 	// third-party telegram
-	tele, err := goutil.NewTele(config.ThirdParty.Telegram.Token, config.ThirdParty.Telegram.ChatID)
+	telegram, err := goutil.NewTele(config.ThirdParty.Telegram.Token, config.ThirdParty.Telegram.ChatID)
 	if err != nil {
 		panic(err)
 	}
 
 	// logs service
-	logs = goutil.NewLog(osLog, tele)
-	defer logs.Sync()
-	defer logs.Undo()
+	logs.Logging = goutil.NewLog(osLog, telegram)
+	defer logs.Logging.Sync()
+	defer logs.Logging.Undo()
 
-	logs.Info(context.Background(), "Success Load Configuration")
+	logs.Logging.Info(context.Background(), "Success Load Configuration")
 
 	// call gin route
 	route := gin.New()
 	route.Use(gin.Recovery())
 	route.Use(requestid.New())
 	route.Use(goutil.SetContext)
-	route.Use(goutil.LogMiddleware(logs))
+	route.Use(goutil.LogMiddleware(logs.Logging))
 
 	// don't remove this code
 	route.Static("nominatim", "../nominatim")
@@ -96,11 +97,21 @@ func main() {
 	}
 
 	// running the service
-	service(route, config, logs, validate)
+	service(route, config, validate)
 
-	logs.Info(context.Background(), "Service Started!")
+	logs.Logging.Info(context.Background(), "Service Started!")
 
 	// run the service
 	route.Run(fmt.Sprintf(":%d", config.Port))
+}
 
+func filenameLog() string {
+	var timeNow = time.Now()
+	year := timeNow.Year()
+	month := timeNow.Month()
+	day := timeNow.Day()
+	minute := timeNow.Minute()
+	second := timeNow.Second()
+
+	return fmt.Sprintf("log_%d%02d%02d%02d%02d.log", year, month, day, minute, second)
 }

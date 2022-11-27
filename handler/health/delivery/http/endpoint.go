@@ -12,41 +12,41 @@ import (
 )
 
 type endpoint struct {
-	usecaseSecurity security.UseCase
-	usecaseHealth   health.UseCase
+	useCaseSecurity security.ISecurityUseCase
+	useCaseHealth   health.IHealthUseCase
 	validation      goutil.Validation
 }
 
 // NewEndpoint is a function for override a useCase method
 func NewEndpoint(
-	usecaseSecurity security.UseCase,
-	usecaseHealth health.UseCase,
 	engine *gin.Engine,
+	useCaseSecurity security.ISecurityUseCase,
+	useCaseHealth health.IHealthUseCase,
 	validation goutil.Validation) error {
 
 	// declare variable
 	var edp = endpoint{
-		usecaseSecurity: usecaseSecurity,
-		usecaseHealth:   usecaseHealth,
+		useCaseSecurity: useCaseSecurity,
+		useCaseHealth:   useCaseHealth,
 		validation:      validation}
 
 	// register the service
-	serviceID, err := usecaseSecurity.RegisterService(context.TODO(), "Security")
+	serviceID, err := useCaseSecurity.RegisterService(context.TODO(), "Security")
 	if err.Error != nil {
 		return err.Error
 	}
 
 	// declare the endpoint
 	const rootEndpoint = "/api/v1/health"
-	var health = payload.RegisterAPIRequest{Name: "Health", Endpoint: rootEndpoint, Method: http.MethodGet, ServiceID: serviceID}
+	var health = payload.RegisterApiRequest{Name: "Health", Endpoint: rootEndpoint, Method: http.MethodGet, ServiceID: serviceID}
 
 	// append data apis
-	var APIs []*payload.RegisterAPIRequest
-	APIs = append(APIs, &health)
+	var Apis []*payload.RegisterApiRequest
+	Apis = append(Apis, &health)
 
 	// register the apis
-	for _, i := range APIs {
-		usecaseSecurity.RegisterAPI(i)
+	for _, i := range Apis {
+		useCaseSecurity.RegisterApi(i)
 	}
 
 	// route the endpoint

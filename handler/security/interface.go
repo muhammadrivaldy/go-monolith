@@ -8,30 +8,25 @@ import (
 )
 
 // UseCase is a interface for layer business
-type UseCase interface {
-	RegisterAPI(req *payload.RegisterAPIRequest)
+type ISecurityUseCase interface {
+	RegisterApi(req *payload.RegisterApiRequest)
 	RegisterService(ctx context.Context, serviceName string) (id int, errs util.Error)
 }
 
-type Entity struct {
-	Database
+type IApiRepo interface {
+	InsertApi(req models.Api) (res models.Api, err error)
+	SelectApiByName(name string) (res models.Api, err error)
+	SelectApiByEndpoint(endpoint string) (res models.Api, err error)
+	UpdateApi(req models.Api) (res models.Api, err error)
 }
 
-type Database interface {
-	Reader
-	Writer
-}
-
-// Reader is a interface for layer data reader
-type Reader interface {
-	SelectServiceByName(serviceName string) (res models.Service, err error)
-	SelectAPIByName(name string) (res models.API, err error)
-	SelectAPIByEndpoint(endpoint string) (res models.API, err error)
-}
-
-// Writer is a interface for layer data writer
-type Writer interface {
+type IServiceRepo interface {
 	InsertService(req models.Service) (res models.Service, err error)
-	InsertAPI(req models.API) (res models.API, err error)
-	UpdateAPI(req models.API) (res models.API, err error)
+	SelectServiceByName(name string) (res models.Service, err error)
+}
+
+type IAccessRepo interface {
+	InsertAccess(req models.Access) (res models.Access, err error)
+	SelectAccessByFilter(req util.FilterQuery) (res models.Access, err error)
+	UpdateAccess(req models.Access) (res models.Access, err error)
 }

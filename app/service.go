@@ -3,9 +3,9 @@ package main
 import (
 	"backend/config"
 	healthHttp "backend/handler/health/delivery/http"
-	healthEnti "backend/handler/health/entity"
+	healthEntity "backend/handler/health/entity"
 	healthUc "backend/handler/health/usecase"
-	securityEnti "backend/handler/security/entity"
+	securityEntity "backend/handler/security/entity"
 	securityUc "backend/handler/security/usecase"
 
 	"github.com/gin-gonic/gin"
@@ -15,24 +15,23 @@ import (
 func service(
 	route *gin.Engine,
 	config config.Configuration,
-	logs goutil.Logs,
 	validate goutil.Validation) {
 
 	// call the function of method entity
-	securityEntity, err := securityEnti.NewEntity(config)
+	securityEntity, err := securityEntity.NewSecurityEntity(config)
 	if err != nil {
 		panic(err)
 	}
 
-	healthEntity, err := healthEnti.NewEntity(config)
+	healthEntity, err := healthEntity.NewEntity(config)
 	if err != nil {
 		panic(err)
 	}
 
 	// call the function of method useCase
-	healthuseCase := healthUc.NewuseCase(logs, healthEntity)
-	securityuseCase := securityUc.NewuseCase(logs, config, securityEntity)
+	healthUseCase := healthUc.NewUseCase(nil, healthEntity)
+	securityUseCase := securityUc.NewSecurityUseCase(config, securityEntity)
 
 	// call the function of method endpoint
-	healthHttp.NewEndpoint(securityuseCase, healthuseCase, route, validate)
+	healthHttp.NewEndpoint(route, securityUseCase, healthUseCase, validate)
 }

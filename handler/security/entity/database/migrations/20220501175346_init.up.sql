@@ -19,3 +19,12 @@ CREATE TABLE IF NOT EXISTS `mst_api` (
   UNIQUE KEY `name_UNIQUE` (`name`),
   UNIQUE KEY `endpoint_method_UNIQUE` (`endpoint`,`method`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `mst_access` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_type_id` int(2) NOT NULL,
+  `api_id` int(3) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=latin1;

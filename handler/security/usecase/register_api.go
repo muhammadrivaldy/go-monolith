@@ -3,35 +3,36 @@ package usecase
 import (
 	"backend/handler/security/models"
 	"backend/handler/security/payload"
+	"backend/logs"
 	"context"
 	"time"
 
 	"gorm.io/gorm"
 )
 
-func (u *useCase) RegisterAPI(req *payload.RegisterAPIRequest) {
+func (u *useCase) RegisterApi(req *payload.RegisterApiRequest) {
 
 	// get info api by name
-	resAPI, err := u.securityEnti.SelectAPIByName(req.Name)
+	resApi, err := u.securityEntity.ApiRepo.SelectApiByName(req.Name)
 	if err != nil && err != gorm.ErrRecordNotFound {
-		u.logs.Error(context.Background(), err)
+		logs.Logging.Error(context.Background(), err)
 		return
 	}
 
 	// get info api by endpoint
-	if resAPI.ID == 0 {
-		resAPI, err = u.securityEnti.SelectAPIByEndpoint(req.Endpoint)
+	if resApi.ID == 0 {
+		resApi, err = u.securityEntity.ApiRepo.SelectApiByEndpoint(req.Endpoint)
 		if err != nil && err != gorm.ErrRecordNotFound {
-			u.logs.Error(context.Background(), err)
+			logs.Logging.Error(context.Background(), err)
 			return
 		}
 	}
 
 	// if result id is zero, insert the api
-	if resAPI.ID == 0 {
+	if resApi.ID == 0 {
 
 		// register endpoint with service id
-		resAPI, err = u.securityEnti.InsertAPI(models.API{
+		resApi, err = u.securityEntity.ApiRepo.InsertApi(models.Api{
 			Name:      req.Name,
 			Endpoint:  req.Endpoint,
 			Method:    req.Method,
@@ -39,23 +40,23 @@ func (u *useCase) RegisterAPI(req *payload.RegisterAPIRequest) {
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now()})
 		if err != nil {
-			u.logs.Error(context.Background(), err)
+			logs.Logging.Error(context.Background(), err)
 			return
 		}
 	} else {
 
 		// update detail api
-		if _, err = u.securityEnti.UpdateAPI(models.API{
-			ID:        resAPI.ID,
+		if _, err = u.securityEntity.ApiRepo.UpdateApi(models.Api{
+			ID:        resApi.ID,
 			Name:      req.Name,
 			Endpoint:  req.Endpoint,
 			Method:    req.Method,
 			ServiceID: req.ServiceID}); err != nil {
-			u.logs.Error(context.Background(), err)
+			logs.Logging.Error(context.Background(), err)
 			return
 		}
 	}
 
 	// override the id of api
-	req.ID = resAPI.ID
+	req.ID = resApi.ID
 }

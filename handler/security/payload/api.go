@@ -1,7 +1,7 @@
 package payload
 
 type (
-	RegisterAPIRequest struct {
+	RegisterApiRequest struct {
 		ID        int64
 		Name      string
 		Endpoint  string

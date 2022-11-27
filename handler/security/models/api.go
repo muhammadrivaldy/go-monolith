@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-type API struct {
+type Api struct {
 	ID        int64     `json:"id" gorm:"column:id"`
 	Name      string    `json:"name" gorm:"column:name"`
 	Endpoint  string    `json:"endpoint" gorm:"column:endpoint"`
@@ -14,6 +14,6 @@ type API struct {
 	UpdatedAt time.Time `json:"updated_at" gorm:"column:updated_at"`
 }
 
-func (API) TableName() string {
+func (Api) TableName() string {
 	return "mst_api"
 }

@@ -7,15 +7,11 @@ import (
 )
 
 // UseCase is a interface for layer business
-type UseCase interface {
+type IHealthUseCase interface {
 	HealthService(ctx context.Context) (res string, errs util.Error)
 	HealthDB(ctx context.Context) (res time.Time, errs util.Error)
 }
 
-type Entity struct {
-	Database
-}
-
-type Database interface {
+type IHealthRepo interface {
 	SelectTime() (res time.Time, err error)
 }

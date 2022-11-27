@@ -3,23 +3,19 @@ package usecase
 import (
 	"backend/config"
 	"backend/handler/security"
-
-	goutil "github.com/muhammadrivaldy/go-util"
+	"backend/handler/security/entity"
 )
 
 type useCase struct {
-	config       config.Configuration
-	securityEnti security.Entity
-	logs         goutil.Logs
+	config         config.Configuration
+	securityEntity entity.SecurityEntity
 }
 
-// NewuseCase is a function for override interface
-func NewuseCase(
-	logs goutil.Logs,
+// NewSecurityUseCase is a function for override interface
+func NewSecurityUseCase(
 	config config.Configuration,
-	securityEnti security.Entity) security.UseCase {
+	securityEntity entity.SecurityEntity) security.ISecurityUseCase {
 	return &useCase{
-		logs:         logs,
-		config:       config,
-		securityEnti: securityEnti}
+		config:         config,
+		securityEntity: securityEntity}
 }

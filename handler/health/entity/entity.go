@@ -4,15 +4,33 @@ import (
 	"backend/config"
 	health "backend/handler/health"
 	db "backend/handler/health/entity/database"
+	"strings"
+
+	goutil "github.com/muhammadrivaldy/go-util"
 )
 
-func NewEntity(conf config.Configuration) (health.Entity, error) {
+type HealthEntity struct {
+	HealthRepo health.IHealthRepo
+}
 
-	database, err := db.NewDatabase(conf)
+func NewEntity(conf config.Configuration) (HealthEntity, error) {
+
+	clientMysql, err := goutil.NewMySQL(
+		conf.Database.User,
+		conf.Database.Password,
+		conf.Database.Address,
+		conf.Database.Schema.Security,
+		strings.Split(conf.Database.Parameters, ","))
 	if err != nil {
-		return health.Entity{}, err
+		return HealthEntity{}, err
 	}
 
-	return health.Entity{
-		Database: database}, nil
+	dbGorm, err := goutil.NewGorm(clientMysql, "mysql", goutil.LoggerSilent)
+	if err != nil {
+		return HealthEntity{}, err
+	}
+
+	return HealthEntity{
+		HealthRepo: db.NewHealthRepo(dbGorm),
+	}, nil
 }

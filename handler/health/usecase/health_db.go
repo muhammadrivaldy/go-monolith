@@ -7,7 +7,8 @@ import (
 )
 
 func (u *useCase) HealthDB(ctx context.Context) (res time.Time, errs util.Error) {
-	res, err := u.health.SelectTime()
+
+	res, err := u.healthEntity.HealthRepo.SelectTime()
 	if err != nil {
 		u.logs.Error(ctx, err)
 		return res, util.ErrorMapping(err)
