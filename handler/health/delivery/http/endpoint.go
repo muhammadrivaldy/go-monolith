@@ -12,26 +12,26 @@ import (
 )
 
 type endpoint struct {
-	usec       security.Usecase
-	uhel       health.Usecase
-	validation goutil.Validation
+	usecaseSecurity security.Usecase
+	usecaseHealth   health.Usecase
+	validation      goutil.Validation
 }
 
 // NewEndpoint is a function for override a usecase method
 func NewEndpoint(
-	usec security.Usecase,
-	uhel health.Usecase,
+	usecaseSecurity security.Usecase,
+	usecaseHealth health.Usecase,
 	engine *gin.Engine,
 	validation goutil.Validation) error {
 
 	// declare variable
 	var edp = endpoint{
-		usec:       usec,
-		uhel:       uhel,
-		validation: validation}
+		usecaseSecurity: usecaseSecurity,
+		usecaseHealth:   usecaseHealth,
+		validation:      validation}
 
 	// register the service
-	serviceID, err := usec.RegisterService(context.TODO(), "Security")
+	serviceID, err := usecaseSecurity.RegisterService(context.TODO(), "Security")
 	if err.Error != nil {
 		return err.Error
 	}
@@ -46,7 +46,7 @@ func NewEndpoint(
 
 	// register the apis
 	for _, i := range APIs {
-		usec.RegisterAPI(i)
+		usecaseSecurity.RegisterAPI(i)
 	}
 
 	// route the endpoint
