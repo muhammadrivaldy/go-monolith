@@ -7,18 +7,18 @@ import (
 	goutil "github.com/muhammadrivaldy/go-util"
 )
 
-type usecase struct {
+type useCase struct {
 	config       config.Configuration
 	securityEnti security.Entity
 	logs         goutil.Logs
 }
 
-// NewUsecase is a function for override interface
-func NewUsecase(
+// NewuseCase is a function for override interface
+func NewuseCase(
 	logs goutil.Logs,
 	config config.Configuration,
-	securityEnti security.Entity) security.Usecase {
-	return &usecase{
+	securityEnti security.Entity) security.UseCase {
+	return &useCase{
 		logs:         logs,
 		config:       config,
 		securityEnti: securityEnti}

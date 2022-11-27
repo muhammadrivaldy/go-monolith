@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func (u *usecase) RegisterService(ctx context.Context, serviceName string) (id int, errs util.Error) {
+func (u *useCase) RegisterService(ctx context.Context, serviceName string) (id int, errs util.Error) {
 
 	// register service name
 	res, err := u.securityEnti.InsertService(models.Service{

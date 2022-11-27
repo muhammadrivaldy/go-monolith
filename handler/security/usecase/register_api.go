@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (u *usecase) RegisterAPI(req *payload.RegisterAPIRequest) {
+func (u *useCase) RegisterAPI(req *payload.RegisterAPIRequest) {
 
 	// get info api by name
 	resAPI, err := u.securityEnti.SelectAPIByName(req.Name)

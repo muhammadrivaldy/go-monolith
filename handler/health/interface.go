@@ -6,8 +6,8 @@ import (
 	"time"
 )
 
-// Usecase is a interface for layer business
-type Usecase interface {
+// UseCase is a interface for layer business
+type UseCase interface {
 	HealthService(ctx context.Context) (res string, errs util.Error)
 	HealthDB(ctx context.Context) (res time.Time, errs util.Error)
 }

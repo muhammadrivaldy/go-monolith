@@ -29,10 +29,10 @@ func service(
 		panic(err)
 	}
 
-	// call the function of method usecase
-	healthUsecase := healthUc.NewUsecase(logs, healthEntity)
-	securityUsecase := securityUc.NewUsecase(logs, config, securityEntity)
+	// call the function of method useCase
+	healthuseCase := healthUc.NewuseCase(logs, healthEntity)
+	securityuseCase := securityUc.NewuseCase(logs, config, securityEntity)
 
 	// call the function of method endpoint
-	healthHttp.NewEndpoint(securityUsecase, healthUsecase, route, validate)
+	healthHttp.NewEndpoint(securityuseCase, healthuseCase, route, validate)
 }

@@ -7,8 +7,8 @@ import (
 	"context"
 )
 
-// Usecase is a interface for layer business
-type Usecase interface {
+// UseCase is a interface for layer business
+type UseCase interface {
 	RegisterAPI(req *payload.RegisterAPIRequest)
 	RegisterService(ctx context.Context, serviceName string) (id int, errs util.Error)
 }

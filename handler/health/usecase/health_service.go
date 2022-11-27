@@ -5,6 +5,6 @@ import (
 	"context"
 )
 
-func (u *usecase) HealthService(ctx context.Context) (res string, errs util.Error) {
+func (u *useCase) HealthService(ctx context.Context) (res string, errs util.Error) {
 	return "Success", errs
 }

@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func (u *usecase) HealthDB(ctx context.Context) (res time.Time, errs util.Error) {
+func (u *useCase) HealthDB(ctx context.Context) (res time.Time, errs util.Error) {
 	res, err := u.health.SelectTime()
 	if err != nil {
 		u.logs.Error(ctx, err)

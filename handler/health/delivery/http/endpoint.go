@@ -12,15 +12,15 @@ import (
 )
 
 type endpoint struct {
-	usecaseSecurity security.Usecase
-	usecaseHealth   health.Usecase
+	usecaseSecurity security.UseCase
+	usecaseHealth   health.UseCase
 	validation      goutil.Validation
 }
 
-// NewEndpoint is a function for override a usecase method
+// NewEndpoint is a function for override a useCase method
 func NewEndpoint(
-	usecaseSecurity security.Usecase,
-	usecaseHealth health.Usecase,
+	usecaseSecurity security.UseCase,
+	usecaseHealth health.UseCase,
 	engine *gin.Engine,
 	validation goutil.Validation) error {
 

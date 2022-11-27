@@ -1,6 +1,6 @@
 # Backend Service
 
-## Instalation
+## Installation
 
 Set up variable environment on your device.
 
