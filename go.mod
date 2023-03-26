@@ -3,6 +3,7 @@ module backend
 go 1.17
 
 require (
+	github.com/dustin/go-humanize v1.0.1
 	github.com/gin-contrib/requestid v0.0.1
 	github.com/gin-gonic/gin v1.7.4
 	github.com/go-sql-driver/mysql v1.6.0
@@ -10,6 +11,7 @@ require (
 	github.com/muhammadrivaldy/go-util v0.3.6
 	github.com/robfig/cron/v3 v3.0.1
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
+	gopkg.in/guregu/null.v4 v4.0.0
 	gorm.io/gorm v1.21.16
 )
 

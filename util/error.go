@@ -15,6 +15,10 @@ type Error struct {
 	Error error
 }
 
+func (e Error) IsError() bool {
+	return e.Error != nil
+}
+
 func ErrorMapping(err error) Error {
 
 	switch err {

@@ -7,7 +7,8 @@ import (
 )
 
 type FilterQuery struct {
-	Conditions []Condition
+	Conditions  []Condition
+	Limit, Page int
 }
 
 type Condition struct {
@@ -33,9 +34,9 @@ func (filter FilterQuery) BuildQuery() (query string, arguments []interface{}) {
 			valueOfValue = reflect.ValueOf(i.Value)
 		}
 
-		if i.Operation == "and" || i.Operation == "or" {
+		if i.Operation == "and" || i.Operation == "or" || i.Operation == "(" || i.Operation == ")" {
 			conditions = append(conditions, i.Operation)
-		} else if i.Operation == "=" || i.Operation == ">" || i.Operation == "<" || i.Operation == ">=" || i.Operation == "<=" || i.Operation == "!=" {
+		} else if i.Operation == "=" || i.Operation == ">" || i.Operation == "<" || i.Operation == ">=" || i.Operation == "<=" || i.Operation == "!=" || i.Operation == "like" {
 			conditions = append(conditions, fmt.Sprintf("%s ?", i.Operation))
 		} else if i.Operation == "in" && typeOfValue == reflect.Array {
 			params := []string{}
@@ -62,4 +63,8 @@ func (filter FilterQuery) BuildQuery() (query string, arguments []interface{}) {
 	}
 
 	return strings.Join(conditions, " "), arguments
+}
+
+func (filter FilterQuery) GetOffset() int {
+	return (filter.Page - 1) * filter.Limit
 }
