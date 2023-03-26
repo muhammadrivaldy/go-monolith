@@ -2,11 +2,11 @@ package main
 
 import (
 	"backend/config"
-	healthHttp "backend/handler/health/delivery/http"
-	healthEntity "backend/handler/health/entity"
-	healthUc "backend/handler/health/usecase"
+	securityHttp "backend/handler/security/delivery/http"
 	securityEntity "backend/handler/security/entity"
-	securityUc "backend/handler/security/usecase"
+	securityUseCase "backend/handler/security/usecase"
+	usersEntity "backend/handler/users/entity"
+	usersUseCase "backend/handler/users/usecase"
 
 	"github.com/gin-gonic/gin"
 	goutil "github.com/muhammadrivaldy/go-util"
@@ -18,20 +18,20 @@ func service(
 	validate goutil.Validation) {
 
 	// call the function of method entity
-	securityEntity, err := securityEntity.NewSecurityEntity(config)
+	securityEntity, err := securityEntity.NewEntity(config)
 	if err != nil {
 		panic(err)
 	}
 
-	healthEntity, err := healthEntity.NewEntity(config)
+	usersEntity, err := usersEntity.NewEntity(config)
 	if err != nil {
 		panic(err)
 	}
 
-	// call the function of method useCase
-	healthUseCase := healthUc.NewUseCase(nil, healthEntity)
-	securityUseCase := securityUc.NewSecurityUseCase(config, securityEntity)
+	// call the function of method usecase
+	securityUseCase := securityUseCase.NewUseCase(config, securityEntity, usersEntity)
+	usersUseCase := usersUseCase.NewUseCase(config, usersEntity)
 
 	// call the function of method endpoint
-	healthHttp.NewEndpoint(route, securityUseCase, healthUseCase, validate)
+	securityHttp.NewEndpoint(config, route, securityUseCase, usersUseCase, validate)
 }

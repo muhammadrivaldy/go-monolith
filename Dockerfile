@@ -1,6 +1,6 @@
 FROM golang:1.17-alpine AS builder
 
-WORKDIR /src/umkm/backend
+WORKDIR /src/backend
 COPY . .
 
 ENV GO111MODULE=on
@@ -10,10 +10,10 @@ RUN cd app && go build -o main
 
 FROM alpine:latest
 
-COPY --from=builder /src/umkm/backend/app /src/umkm/backend/app
-COPY --from=builder /src/umkm/backend/config /src/umkm/backend/config
+COPY --from=builder /src/backend/app /src/backend/app
+COPY --from=builder /src/backend/config /src/backend/config
 
-WORKDIR /src/umkm/backend/app
+WORKDIR /src/backend/app
 
 EXPOSE 8080
 

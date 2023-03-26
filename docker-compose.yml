@@ -1,71 +1,83 @@
-version: "3.9"
+version: "3.3"
 services:
-  db:
-    container_name: db-mysql
-    image: mysql:latest
+  db-security:
+    container_name: db-laundry-security
+    image: mysql:8.0-debian
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     ports:
       - 3306:3306
     environment:
       MYSQL_ROOT_PASSWORD: root
-      # MYSQL_USER: mediotea
-      # MYSQL_PASSWORD: "se^5#Es27*u"
-      # MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+      MYSQL_DATABASE: security
     volumes:
-      - mysql-likegram:/var/lib/mysql
+      - mysql-laundry-security:/var/lib/mysql
+    networks:
+      - server-side
+  
+  db-users:
+    container_name: db-laundry-users
+    image: mysql:8.0-debian
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports:
+      - 3310:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: users
+    volumes:
+      - mysql-laundry-users:/var/lib/mysql
     networks:
       - server-side
 
-  adminer:
-    container_name: db-adminer
-    image: adminer:latest
-    restart: always
-    depends_on:
-      - db
-    environment:
-      ADMINER_DEFAULT_SERVER: db
-    ports:
-      - 5050:8080
-    networks:
-      - server-side
-
-  likegram:
-    container_name: likegram-service
-    image: umkm:latest
-    restart: always
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - 8080:8080
-    environment:
-      DB_ADDRESS: db
-      DB_USER: root
-      DB_PASSWORD: root
-      PATH_CONF: ../config
-      FILE_CONF: local.conf
-    depends_on:
-      - db
-      - adminer
-      - redis
-    networks:
-      - server-side
+  # laundry:
+  #   container_name: laundry-service
+  #   image: laundry:latest
+  #   restart: always
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - 8080:8080
+  #   environment:
+  #     DB_ADDRESS: db
+  #     DB_USER: root
+  #     DB_PASSWORD: root
+  #     PATH_CONF: ../config
+  #     FILE_CONF: local.conf
+  #   depends_on:
+  #     - db
+  #     - adminer
+  #     - redis
+  #   networks:
+  #     - server-side
 
   redis:
-    container_name: db-redis
+    container_name: redis-laundry
     image: redis:6.2.4
     restart: always
     ports:
       - 6379:6379
     volumes:
-      - redis-likegram:/data
+      - redis-laundry:/data
     networks:
       - server-side
+
+  swagger-ui:
+    container_name: swagger-ui
+    image: swaggerapi/swagger-ui
+    restart: always
+    volumes:
+      - ./docs/openapi:/openapi
+    ports:
+      - 5050:8080
+    environment:
+      SWAGGER_JSON: /openapi/swagger.yaml
 
 networks:
   server-side:
 
 volumes:
-  mysql-likegram:
-  redis-likegram:
+  mysql-laundry-security:
+  mysql-laundry-users:
+  redis-laundry:

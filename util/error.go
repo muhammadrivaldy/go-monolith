@@ -8,6 +8,7 @@ import (
 var (
 	ErrorDefault      = errors.New("something when wrong")
 	ErrorDataNotFound = errors.New("data not found")
+	ErrorUnauthorized = errors.New("unauthorized access")
 )
 
 type Error struct {
@@ -26,6 +27,8 @@ func ErrorMapping(err error) Error {
 		return Error{}
 	case ErrorDataNotFound:
 		return Error{Code: http.StatusNotFound, Error: err}
+	case ErrorUnauthorized:
+		return Error{Code: http.StatusUnauthorized, Error: err}
 	default:
 		return Error{Code: http.StatusInternalServerError, Error: ErrorDefault}
 	}

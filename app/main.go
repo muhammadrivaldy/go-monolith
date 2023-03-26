@@ -7,17 +7,18 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
 	goutil "github.com/muhammadrivaldy/go-util"
-	"github.com/robfig/cron/v3"
 )
 
 const (
 	pathConfigEnv = "PATH_CONF"
 	fileConfigEnv = "FILE_CONF"
+	pathLogEnv    = "PATH_LOG"
 )
 
 func main() {
@@ -25,34 +26,28 @@ func main() {
 	// get path & file configuration from environment variable
 	pathConfig := os.Getenv(pathConfigEnv)
 	fileConfig := os.Getenv(fileConfigEnv)
+	pathLog := os.Getenv(pathLogEnv)
+
+	// get argument
+	argument := os.Args[1]
+	createOutputLog, _ := strconv.ParseBool(argument)
 
 	// declare variable
 	var err error
 
 	// logging
 	var osLog *os.File
-	defer osLog.Close()
-	osLog, err = goutil.OpenFile("./logs", filenameLog())
-	if err != nil {
-		panic(err)
-	}
+	if createOutputLog == true {
 
-	// override io writer to gin default writer
-	gin.DefaultWriter = io.Writer(osLog)
-
-	// cron for create a log file every day
-	c := cron.New()
-	c.AddFunc("@midnight", func() {
-		osLogNewest, err := goutil.OpenFileNewest(osLog, "./logs", filenameLog())
+		defer osLog.Close()
+		osLog, err = goutil.OpenFile(pathLog, "service.log")
 		if err != nil {
-			return
+			panic(err)
 		}
 
-		logs.Logging.Config(osLogNewest)
-		gin.DefaultWriter = io.Writer(osLogNewest)
-		osLog = osLogNewest
-	})
-	c.Start()
+		// override io writer to gin default writer
+		gin.DefaultWriter = io.Writer(osLog)
+	}
 
 	// open file for configuration
 	osFile, err := goutil.OpenFile(pathConfig, fileConfig)
@@ -68,17 +63,16 @@ func main() {
 	}
 
 	// third-party telegram
-	telegram, err := goutil.NewTele(config.ThirdParty.Telegram.Token, config.ThirdParty.Telegram.ChatID)
+	telegram, _ := goutil.NewTele(config.ThirdParty.Telegram.Token, config.ThirdParty.Telegram.ChatId)
+
+	// logs service
+	logs.Logging, err = goutil.NewLog(osLog, telegram, createOutputLog)
 	if err != nil {
 		panic(err)
 	}
 
-	// logs service
-	logs.Logging = goutil.NewLog(osLog, telegram)
 	defer logs.Logging.Sync()
 	defer logs.Logging.Undo()
-
-	logs.Logging.Info(context.Background(), "Success Load Configuration")
 
 	// call gin route
 	route := gin.New()
@@ -87,19 +81,19 @@ func main() {
 	route.Use(goutil.SetContext)
 	route.Use(goutil.LogMiddleware(logs.Logging))
 
-	// don't remove this code
-	route.Static("nominatim", "../nominatim")
-
 	// validation method
 	validate, err := goutil.NewValidation()
 	if err != nil {
 		panic(err)
 	}
 
+	// static route
+	route.Static("/swagger/", "../docs/openapi")
+
 	// running the service
 	service(route, config, validate)
 
-	logs.Logging.Info(context.Background(), "Service Started!")
+	logs.Logging.Info(context.Background(), fmt.Sprintf("Service Started! at %d", config.Port))
 
 	// run the service
 	route.Run(fmt.Sprintf(":%d", config.Port))
