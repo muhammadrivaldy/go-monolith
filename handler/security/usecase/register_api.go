@@ -10,18 +10,18 @@ import (
 	"gorm.io/gorm"
 )
 
-func (u *useCase) RegisterApi(ctx context.Context, req *payload.RegisterApiRequest) {
+func (s securityUseCase) RegisterApi(ctx context.Context, req *payload.RegisterApiRequest) {
 
 	// get info api by name
-	resApi, err := u.securityEntity.ApiRepo.SelectApiByName(req.Name)
+	resApi, err := s.securityEntity.ApiRepo.SelectApiByName(req.Name)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		logs.Logging.Error(ctx, err)
 		return
 	}
 
 	// get info api by endpoint
-	if resApi.ID == 0 {
-		resApi, err = u.securityEntity.ApiRepo.SelectApiByEndpoint(req.Endpoint)
+	if resApi.Id == 0 {
+		resApi, err = s.securityEntity.ApiRepo.SelectApiByEndpoint(req.Endpoint, req.Method)
 		if err != nil && err != gorm.ErrRecordNotFound {
 			logs.Logging.Error(ctx, err)
 			return
@@ -29,14 +29,14 @@ func (u *useCase) RegisterApi(ctx context.Context, req *payload.RegisterApiReque
 	}
 
 	// if result id is zero, insert the api
-	if resApi.ID == 0 {
+	if resApi.Id == 0 {
 
 		// register endpoint with service id
-		resApi, err = u.securityEntity.ApiRepo.InsertApi(models.Api{
+		resApi, err = s.securityEntity.ApiRepo.InsertApi(models.Api{
 			Name:      req.Name,
 			Endpoint:  req.Endpoint,
 			Method:    req.Method,
-			ServiceID: req.ServiceID,
+			ServiceId: req.ServiceId,
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now()})
 		if err != nil {
@@ -46,17 +46,17 @@ func (u *useCase) RegisterApi(ctx context.Context, req *payload.RegisterApiReque
 	} else {
 
 		// update detail api
-		if _, err = u.securityEntity.ApiRepo.UpdateApi(models.Api{
-			ID:        resApi.ID,
+		if _, err = s.securityEntity.ApiRepo.UpdateApi(models.Api{
+			Id:        resApi.Id,
 			Name:      req.Name,
 			Endpoint:  req.Endpoint,
 			Method:    req.Method,
-			ServiceID: req.ServiceID}); err != nil {
+			ServiceId: req.ServiceId}); err != nil {
 			logs.Logging.Error(ctx, err)
 			return
 		}
 	}
 
 	// override the id of api
-	req.ID = resApi.ID
+	req.Id = resApi.Id
 }

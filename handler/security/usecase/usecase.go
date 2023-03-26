@@ -4,18 +4,22 @@ import (
 	"backend/config"
 	"backend/handler/security"
 	"backend/handler/security/entity"
+	entityUser "backend/handler/users/entity"
 )
 
-type useCase struct {
+type securityUseCase struct {
 	config         config.Configuration
 	securityEntity entity.SecurityEntity
+	userEntity     entityUser.UserEntity
 }
 
-// NewSecurityUseCase is a function for override interface
-func NewSecurityUseCase(
+// NewUseCase is a function for override interface
+func NewUseCase(
 	config config.Configuration,
-	securityEntity entity.SecurityEntity) security.ISecurityUseCase {
-	return &useCase{
+	securityEntity entity.SecurityEntity,
+	userEntity entityUser.UserEntity) security.ISecurityUseCase {
+	return securityUseCase{
 		config:         config,
-		securityEntity: securityEntity}
+		securityEntity: securityEntity,
+		userEntity:     userEntity}
 }

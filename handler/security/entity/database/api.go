@@ -8,30 +8,30 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-type api struct {
+type apiRepo struct {
 	dbGorm *gorm.DB
 }
 
 func NewApiRepo(dbGorm *gorm.DB) security.IApiRepo {
-	return api{dbGorm: dbGorm}
+	return apiRepo{dbGorm: dbGorm}
 }
 
-func (a api) InsertApi(req models.Api) (res models.Api, err error) {
+func (a apiRepo) InsertApi(req models.Api) (res models.Api, err error) {
 	err = a.dbGorm.Clauses(clause.OnConflict{DoNothing: true}).Create(&req).Error
 	return req, err
 }
 
-func (a api) SelectApiByName(name string) (res models.Api, err error) {
+func (a apiRepo) SelectApiByName(name string) (res models.Api, err error) {
 	err = a.dbGorm.Where("name = ?", name).First(&res).Error
 	return
 }
 
-func (a api) SelectApiByEndpoint(endpoint string) (res models.Api, err error) {
-	err = a.dbGorm.Where("endpoint = ?", endpoint).First(&res).Error
+func (a apiRepo) SelectApiByEndpoint(endpoint, method string) (res models.Api, err error) {
+	err = a.dbGorm.Where("endpoint = ? and method = ?", endpoint, method).First(&res).Error
 	return
 }
 
-func (a api) UpdateApi(req models.Api) (res models.Api, err error) {
-	err = a.dbGorm.Model(&models.Api{}).Where(`id = ?`, req.ID).Updates(req).First(&res).Error
+func (a apiRepo) UpdateApi(req models.Api) (res models.Api, err error) {
+	err = a.dbGorm.Model(&models.Api{}).Where("id = ?", req.Id).Updates(req).First(&res).Error
 	return
 }

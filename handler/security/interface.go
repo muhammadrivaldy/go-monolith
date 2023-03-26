@@ -11,13 +11,15 @@ import (
 type ISecurityUseCase interface {
 	RegisterApi(ctx context.Context, req *payload.RegisterApiRequest)
 	RegisterService(ctx context.Context, serviceName string) (id int, errs util.Error)
-	ValidateAccessUser(ctx context.Context, apiID int, userTypeID int) (bool, error)
+	ValidateAccessUser(ctx context.Context, apiId int64) (res bool, errs util.Error)
+	Login(ctx context.Context, email, password string) (res payload.ResponseLogin, errs util.Error)
+	RefreshJWT(ctx context.Context) (res payload.ResponseLogin, errs util.Error)
 }
 
 type IApiRepo interface {
 	InsertApi(req models.Api) (res models.Api, err error)
 	SelectApiByName(name string) (res models.Api, err error)
-	SelectApiByEndpoint(endpoint string) (res models.Api, err error)
+	SelectApiByEndpoint(endpoint, method string) (res models.Api, err error)
 	UpdateApi(req models.Api) (res models.Api, err error)
 }
 

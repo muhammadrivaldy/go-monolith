@@ -8,20 +8,20 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-type service struct {
+type serviceRepo struct {
 	dbGorm *gorm.DB
 }
 
 func NewServiceRepo(dbGorm *gorm.DB) security.IServiceRepo {
-	return service{dbGorm: dbGorm}
+	return serviceRepo{dbGorm: dbGorm}
 }
 
-func (s service) InsertService(req models.Service) (res models.Service, err error) {
+func (s serviceRepo) InsertService(req models.Service) (res models.Service, err error) {
 	err = s.dbGorm.Clauses(clause.OnConflict{DoNothing: true}).Create(&req).Error
 	return req, err
 }
 
-func (s service) SelectServiceByName(name string) (res models.Service, err error) {
+func (s serviceRepo) SelectServiceByName(name string) (res models.Service, err error) {
 	err = s.dbGorm.Where("name = ?", name).First(&res).Error
 	return
 }
