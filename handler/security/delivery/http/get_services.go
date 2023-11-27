@@ -9,17 +9,20 @@ import (
 	goutil "github.com/muhammadrivaldy/go-util"
 )
 
-func (e *endpoint) RefreshJWT(c *gin.Context) {
+func (e endpoint) GetServices(c *gin.Context) {
 
 	ctx := goutil.ParseContext(c)
 
+	// call services
 	res, errs := middleware.WrapUseCase(ctx, nil, func() (interface{}, util.Error) {
-		return e.useCaseSecurity.RefreshJWT(ctx)
+		return e.useCaseSecurity.GetServices(ctx)
 	})
-	if errs.Error != nil {
+	if errs.IsError() {
 		goutil.ResponseError(c, errs.Code, errs.Error, nil)
 		return
 	}
 
+	// response
 	goutil.ResponseOK(c, http.StatusOK, res)
+
 }

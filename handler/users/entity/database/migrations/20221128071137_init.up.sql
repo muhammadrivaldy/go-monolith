@@ -51,9 +51,5 @@ CREATE TABLE `mst_customer` (
 
 INSERT INTO `mst_user_status` VALUES (-1, "non-active", "Non Active", now()); 
 INSERT INTO `mst_user_status` VALUES (1, "active", "Active", now());
-
 INSERT INTO `mst_user_type` VALUES (1, "root", "Root", now());
-INSERT INTO `mst_user_type` VALUES (2, "owner-laundry", "Owner Laundry", now());
-INSERT INTO `mst_user_type` VALUES (3, "admin-laundry", "Admin Laundry", now());
-
 INSERT INTO `mst_user` VALUES (1, "Rivaldy", "087751231234", "admin@example.com", 1, "$2a$04$w8SjLzG5jcPG4r8b8NKayeqlbTErP8iTpnvd6kQjR5C/SBlklR/wW", 1, 1, now(), 1, now());

@@ -10,14 +10,12 @@ import (
 	goutil "github.com/muhammadrivaldy/go-util"
 )
 
-func (e *endpoint) Login(c *gin.Context) {
-
-	email, password, _ := c.Request.BasicAuth()
+func (e *endpoint) UpdatePassword(c *gin.Context) {
 
 	// set payload
-	payload := payload.RequestLogin{
-		Email:    email,
-		Password: password,
+	payload := payload.RequestUpdatePassword{
+		UserId:   util.StringToInt(c.Param("user_id")),
+		Password: c.PostForm("password"),
 	}
 
 	// validate payload
@@ -30,7 +28,8 @@ func (e *endpoint) Login(c *gin.Context) {
 
 	// call service
 	response, errs := middleware.WrapUseCase(ctx, payload, func() (interface{}, util.Error) {
-		return e.useCaseSecurity.Login(ctx, payload)
+		errs := e.useCaseSecurity.UpdatePassword(ctx, payload)
+		return nil, errs
 	})
 	if errs.IsError() {
 		goutil.ResponseError(c, errs.Code, errs.Error, nil)

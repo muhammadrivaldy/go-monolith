@@ -18,7 +18,7 @@ func NewUseCase(
 	config config.Configuration,
 	securityEntity entity.SecurityEntity,
 	userEntity entityUser.UserEntity) security.ISecurityUseCase {
-	return securityUseCase{
+	return &securityUseCase{
 		config:         config,
 		securityEntity: securityEntity,
 		userEntity:     userEntity}

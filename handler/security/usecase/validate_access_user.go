@@ -8,7 +8,7 @@ import (
 	goutil "github.com/muhammadrivaldy/go-util"
 )
 
-func (s securityUseCase) ValidateAccessUser(ctx context.Context, apiId int64) (res bool, errs util.Error) {
+func (s *securityUseCase) ValidateAccessUser(ctx context.Context, apiId int64) (res bool, errs util.Error) {
 
 	userInfo := goutil.GetContext(ctx)
 

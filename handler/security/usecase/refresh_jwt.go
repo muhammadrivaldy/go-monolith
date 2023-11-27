@@ -13,13 +13,13 @@ import (
 	"gorm.io/gorm"
 )
 
-func (s securityUseCase) RefreshJWT(ctx context.Context) (res payload.ResponseLogin, errs util.Error) {
+func (s *securityUseCase) RefreshJWT(ctx context.Context) (res payload.ResponseLogin, errs util.Error) {
 
 	userInfo := goutil.GetContext(ctx)
 
 	modelUser, err := s.userEntity.UserRepo.SelectUserById(userInfo.UserId)
 	if err == gorm.ErrRecordNotFound {
-		logs.Logging.Error(ctx, err)
+		logs.Logging.Warning(ctx, err)
 		return res, util.ErrorMapping(util.ErrorDataNotFound)
 	} else if err != nil {
 		logs.Logging.Error(ctx, err)
@@ -27,17 +27,17 @@ func (s securityUseCase) RefreshJWT(ctx context.Context) (res payload.ResponseLo
 	}
 
 	if !modelUser.Status.IsActive() {
-		logs.Logging.Error(ctx, errors.New("user is not active"))
+		logs.Logging.Warning(ctx, errors.New("user is not active"))
 		return res, util.ErrorMapping(util.ErrorDataNotFound)
 	}
 
+	res.UserId = modelUser.Id
+
 	res.Token, res.RefreshToken, err = goutil.CreateJWT(goutil.JWT{
 		UserId:     modelUser.Id,
-		Name:       modelUser.Name,
-		Phone:      modelUser.Phone,
+		UserType:   int(modelUser.UserTypeId),
 		Email:      modelUser.Email,
-		GroupId:    int(modelUser.UserTypeId),
-		ExpToken:   time.Now().Add(15 * time.Minute),
+		ExpToken:   time.Now().AddDate(0, 0, 2),
 		ExpRefresh: time.Now().AddDate(0, 0, 15),
 		Jti:        userInfo.Jti,
 	}, jwt.SigningMethodHS256, s.config.JWTKey)

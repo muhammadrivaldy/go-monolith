@@ -13,11 +13,11 @@ import (
 	"gorm.io/gorm"
 )
 
-func (s securityUseCase) Login(ctx context.Context, email, password string) (res payload.ResponseLogin, errs util.Error) {
+func (s *securityUseCase) Login(ctx context.Context, req payload.RequestLogin) (res payload.ResponseLogin, errs util.Error) {
 
-	modelUser, err := s.userEntity.UserRepo.SelectUserByEmail(email)
+	modelUser, err := s.userEntity.UserRepo.SelectUserByEmail(req.Email)
 	if err == gorm.ErrRecordNotFound {
-		logs.Logging.Error(ctx, err)
+		logs.Logging.Warning(ctx, err)
 		return res, util.ErrorMapping(util.ErrorDataNotFound)
 	} else if err != nil {
 		logs.Logging.Error(ctx, err)
@@ -25,22 +25,22 @@ func (s securityUseCase) Login(ctx context.Context, email, password string) (res
 	}
 
 	if !modelUser.Status.IsActive() {
-		logs.Logging.Error(ctx, errors.New("user is not active"))
+		logs.Logging.Warning(ctx, errors.New("user is not active"))
 		return res, util.ErrorMapping(util.ErrorDataNotFound)
 	}
 
-	if !modelUser.ValidatePassword(password) {
-		logs.Logging.Error(ctx, errors.New("password is not match"))
+	if !modelUser.ValidatePassword(req.Password) {
+		logs.Logging.Warning(ctx, errors.New("password is not match"))
 		return res, util.ErrorMapping(util.ErrorUnauthorized)
 	}
 
+	res.UserId = modelUser.Id
+
 	res.Token, res.RefreshToken, err = goutil.CreateJWT(goutil.JWT{
 		UserId:     modelUser.Id,
-		Name:       modelUser.Name,
-		Phone:      modelUser.Phone,
+		UserType:   int(modelUser.UserTypeId),
 		Email:      modelUser.Email,
-		GroupId:    int(modelUser.UserTypeId),
-		ExpToken:   time.Now().Add(15 * time.Minute),
+		ExpToken:   time.Now().AddDate(0, 0, 2),
 		ExpRefresh: time.Now().AddDate(0, 0, 15),
 	}, jwt.SigningMethodHS256, s.config.JWTKey)
 	if err != nil {

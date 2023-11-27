@@ -1,7 +1,7 @@
 package usecase
 
 import (
-	"backend/handler/users/models"
+	"backend/handler/users/payload"
 	"backend/logs"
 	"backend/util"
 	"context"
@@ -10,11 +10,12 @@ import (
 	"gorm.io/gorm"
 )
 
-func (u userUseCase) GetUserById(ctx context.Context, id int64) (res models.User, errs util.Error) {
+func (u userUseCase) GetUserById(ctx context.Context, req payload.RequestGetUserById) (res payload.ResponseGetUserById, errs util.Error) {
 
-	user, err := u.userEntity.UserRepo.SelectUserById(id)
+	// get user
+	user, err := u.userEntity.UserRepo.SelectUserById(req.UserId)
 	if err == gorm.ErrRecordNotFound {
-		logs.Logging.Error(ctx, err)
+		logs.Logging.Warning(ctx, err)
 		return res, util.ErrorMapping(util.ErrorDataNotFound)
 	} else if err != nil {
 		logs.Logging.Error(ctx, err)
@@ -26,5 +27,15 @@ func (u userUseCase) GetUserById(ctx context.Context, id int64) (res models.User
 		return res, util.ErrorMapping(util.ErrorDataNotFound)
 	}
 
-	return user, util.ErrorMapping(nil)
+	// set response
+	return payload.ResponseGetUserById{
+		Id:           user.Id,
+		Name:         user.Name,
+		PhoneNumber:  user.Phone,
+		Email:        user.Email,
+		Status:       int(user.Status),
+		StatusName:   user.Status.String(),
+		UserType:     int(user.UserTypeId),
+		UserTypeName: user.UserTypeId.String(),
+	}, util.ErrorMapping(nil)
 }

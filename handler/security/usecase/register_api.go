@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (s securityUseCase) RegisterApi(ctx context.Context, req *payload.RegisterApiRequest) {
+func (s *securityUseCase) RegisterApi(ctx context.Context, req *payload.RequestRegisterApi) {
 
 	// get info api by name
 	resApi, err := s.securityEntity.ApiRepo.SelectApiByName(req.Name)
@@ -36,13 +36,14 @@ func (s securityUseCase) RegisterApi(ctx context.Context, req *payload.RegisterA
 			Name:      req.Name,
 			Endpoint:  req.Endpoint,
 			Method:    req.Method,
-			ServiceId: req.ServiceId,
+			ServiceID: req.ServiceID,
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now()})
 		if err != nil {
 			logs.Logging.Error(ctx, err)
 			return
 		}
+
 	} else {
 
 		// update detail api
@@ -51,12 +52,13 @@ func (s securityUseCase) RegisterApi(ctx context.Context, req *payload.RegisterA
 			Name:      req.Name,
 			Endpoint:  req.Endpoint,
 			Method:    req.Method,
-			ServiceId: req.ServiceId}); err != nil {
+			ServiceID: req.ServiceID}); err != nil {
 			logs.Logging.Error(ctx, err)
 			return
 		}
+
 	}
 
 	// override the id of api
-	req.Id = resApi.Id
+	req.ID = resApi.Id
 }

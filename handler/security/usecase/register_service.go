@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (s securityUseCase) RegisterService(ctx context.Context, serviceName string) (id int, errs util.Error) {
+func (s *securityUseCase) RegisterService(ctx context.Context, serviceName string) (id int64, errs util.Error) {
 
 	res, err := s.securityEntity.ServiceRepo.SelectServiceByName(serviceName)
 	if err != nil && err != gorm.ErrRecordNotFound {

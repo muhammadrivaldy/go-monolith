@@ -61,6 +61,11 @@ func (u userRepo) SelectUserByPhone(phone string) (res models.User, err error) {
 	return
 }
 
+func (u userRepo) SelectUsersById(id []int64) (res []models.User, err error) {
+	err = u.dbGorm.Where("id in (?)", id).Find(&res).Error
+	return
+}
+
 func (u userRepo) UpdateUser(req models.User) (res models.User, err error) {
 	err = u.dbGorm.Model(&models.User{}).Where("id = ?", req.Id).Updates(req).First(&res).Error
 	return
