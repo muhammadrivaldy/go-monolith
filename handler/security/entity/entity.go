@@ -20,6 +20,7 @@ type SecurityEntity struct {
 	AccessRepo  security.IAccessRepo
 	ApiRepo     security.IApiRepo
 	ServiceRepo security.IServiceRepo
+	VersionRepo security.IVersionRepo
 }
 
 func NewEntity(conf config.Configuration) (SecurityEntity, error) {
@@ -59,14 +60,15 @@ func NewEntity(conf config.Configuration) (SecurityEntity, error) {
 		return SecurityEntity{}, err
 	}
 
-	redisClient := redis.NewClient(&redis.Options{
+	clientRedis := redis.NewClient(&redis.Options{
 		Addr: conf.Redis.Address,
 		DB:   0,
 	})
 
 	return SecurityEntity{
-		AccessRepo:  database.NewAccessRepo(dbGorm, redisClient),
+		AccessRepo:  database.NewAccessRepo(dbGorm, clientRedis),
 		ApiRepo:     database.NewApiRepo(dbGorm),
 		ServiceRepo: database.NewServiceRepo(dbGorm),
+		VersionRepo: database.NewVersionRepo(dbGorm),
 	}, nil
 }
