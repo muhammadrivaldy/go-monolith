@@ -42,12 +42,12 @@ func NewEndpoint(
 	const rootEndpoint = "/api/v1/security"
 	var login = payload.RequestRegisterApi{Name: "Login", Endpoint: rootEndpoint + "/login", Method: http.MethodPost, ServiceID: serviceId}
 	var refreshJwt = payload.RequestRegisterApi{Name: "Refresh JWT", Endpoint: rootEndpoint + "/refresh", Method: http.MethodPost, ServiceID: serviceId}
-	var getAccessApi = payload.RequestRegisterApi{Name: "Get Access Api", Endpoint: rootEndpoint + "/access/user/:user_type", Method: http.MethodGet, ServiceID: serviceId}
-	var patchAccessApi = payload.RequestRegisterApi{Name: "Patch Access Api", Endpoint: rootEndpoint + "/access/user/:user_type", Method: http.MethodPatch, ServiceID: serviceId}
-	var getServices = payload.RequestRegisterApi{Name: "Get Services", Endpoint: rootEndpoint + "/service", Method: http.MethodGet, ServiceID: serviceId}
-	var getApisByServiceId = payload.RequestRegisterApi{Name: "Get Apis By Service Id", Endpoint: rootEndpoint + "/service/:service_id/api", Method: http.MethodGet, ServiceID: serviceId}
+	var getAccessApi = payload.RequestRegisterApi{Name: "Get Access Api", Endpoint: rootEndpoint + "/accesses/users/:user_type", Method: http.MethodGet, ServiceID: serviceId}
+	var patchAccessApi = payload.RequestRegisterApi{Name: "Patch Access Api", Endpoint: rootEndpoint + "/accesses/users/:user_type", Method: http.MethodPatch, ServiceID: serviceId}
+	var getServices = payload.RequestRegisterApi{Name: "Get Services", Endpoint: rootEndpoint + "/services", Method: http.MethodGet, ServiceID: serviceId}
+	var getApisByServiceId = payload.RequestRegisterApi{Name: "Get Apis By Service Id", Endpoint: rootEndpoint + "/services/:service_id/api", Method: http.MethodGet, ServiceID: serviceId}
 	var versionSupport = payload.RequestRegisterApi{Name: "Version Support", Endpoint: rootEndpoint + "/version/support", Method: http.MethodPost, ServiceID: serviceId}
-	var updatePassword = payload.RequestRegisterApi{Name: "Update Password", Endpoint: rootEndpoint + "/user/:user_id/password", Method: http.MethodPut, ServiceID: serviceId}
+	var updatePassword = payload.RequestRegisterApi{Name: "Update Password", Endpoint: rootEndpoint + "/users/:user_id/password", Method: http.MethodPut, ServiceID: serviceId}
 
 	// append data apis
 	var Apis []*payload.RequestRegisterApi
