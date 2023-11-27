@@ -3,6 +3,7 @@ package middleware
 import (
 	"backend/handler/security"
 	"backend/handler/users"
+	"backend/handler/users/payload"
 	"backend/logs"
 	"errors"
 	"net/http"
@@ -30,7 +31,7 @@ func (m middleware) ValidateAccess(apiId int64) func(c *gin.Context) {
 
 		userInfo := goutil.GetContext(ctx)
 
-		modelUser, errs := m.useCaseUser.GetUserById(ctx, userInfo.UserId)
+		modelUser, errs := m.useCaseUser.GetUserById(ctx, payload.RequestGetUserById{UserId: userInfo.UserId})
 		if errs.Error != nil {
 			logs.Logging.Error(ctx, errs.Error)
 			goutil.ResponseError(c, http.StatusForbidden, errors.New(http.StatusText(http.StatusForbidden)), nil)
@@ -40,8 +41,8 @@ func (m middleware) ValidateAccess(apiId int64) func(c *gin.Context) {
 
 		// the meaning of 2 is api for refresh jwt and make sure the id of refresh jwt is 2
 		if apiId != 2 {
-			if modelUser.Email != userInfo.Email || modelUser.Phone != userInfo.Phone || int(modelUser.UserTypeId) != userInfo.GroupId {
-				logs.Logging.Error(ctx, errors.New("failed when validate the user data"))
+			if int(modelUser.UserType) != userInfo.GroupId {
+				logs.Logging.Warning(ctx, errors.New("failed when validate the user data"))
 				goutil.ResponseError(c, http.StatusUnauthorized, errors.New(http.StatusText(http.StatusUnauthorized)), nil)
 				c.Abort()
 				return
@@ -50,7 +51,7 @@ func (m middleware) ValidateAccess(apiId int64) func(c *gin.Context) {
 
 		_, errs = m.useCaseSecurity.ValidateAccessUser(ctx, apiId)
 		if errs.Error != nil {
-			logs.Logging.Error(ctx, errs.Error)
+			logs.Logging.Warning(ctx, errs.Error)
 			goutil.ResponseError(c, http.StatusForbidden, errors.New(http.StatusText(http.StatusForbidden)), nil)
 			c.Abort()
 			return
