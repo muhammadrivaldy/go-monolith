@@ -28,9 +28,14 @@ func (a accessRepo) InsertAccess(req models.Access) (res models.Access, err erro
 	return req, err
 }
 
+func (a accessRepo) InsertAccesses(req []models.Access) (res []models.Access, err error) {
+	err = a.dbGorm.Clauses(clause.OnConflict{DoNothing: true}).Create(&req).Find(&res).Error
+	return
+}
+
 func (a accessRepo) SelectAccessByFilter(req util.FilterQuery) (res models.Access, err error) {
 
-	query, arguments := req.BuildQuery()
+	query, _, arguments := req.BuildQuery()
 
 	result, _ := a.redis.Get(context.Background(), fmt.Sprintf("select-access:%s", fmt.Sprintf("api-id:%d_user-type:%d", arguments...))).Bytes()
 
@@ -42,7 +47,7 @@ func (a accessRepo) SelectAccessByFilter(req util.FilterQuery) (res models.Acces
 
 		result, _ = json.Marshal(res)
 
-		a.redis.Set(context.Background(), fmt.Sprintf("select-access:%s", fmt.Sprintf("api-id:%d_user-type:%d", arguments...)), result, 5*time.Minute)
+		a.redis.Set(context.Background(), fmt.Sprintf("select-access:%s", fmt.Sprintf("api-id:%d_user-type:%d", arguments...)), result, 1*time.Minute)
 
 		return
 	}
@@ -57,5 +62,15 @@ func (a accessRepo) SelectAccessByFilter(req util.FilterQuery) (res models.Acces
 
 func (a accessRepo) UpdateAccess(req models.Access) (res models.Access, err error) {
 	err = a.dbGorm.Model(&models.Access{}).Where(`id = ?`, req.Id).Updates(req).First(&res).Error
+	return
+}
+
+func (a accessRepo) SelectAccessByUserType(userTypeId int) (res []models.Access, err error) {
+	err = a.dbGorm.Where("user_type_id = ?", userTypeId).Find(&res).Error
+	return
+}
+
+func (a accessRepo) DeleteAccessesByUserTypeIdAndApiId(userTypeId int, apiId []int) (err error) {
+	err = a.dbGorm.Where("user_type_id = ? and api_id in (?)", userTypeId, apiId).Delete(&models.Access{}).Error
 	return
 }

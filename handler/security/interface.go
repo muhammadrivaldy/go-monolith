@@ -30,6 +30,15 @@ type IServiceRepo interface {
 
 type IAccessRepo interface {
 	InsertAccess(req models.Access) (res models.Access, err error)
+	InsertAccesses(req []models.Access) (res []models.Access, err error)
 	SelectAccessByFilter(req util.FilterQuery) (res models.Access, err error)
+	SelectAccessByUserType(userTypeId int) (res []models.Access, err error)
 	UpdateAccess(req models.Access) (res models.Access, err error)
+	DeleteAccessesByUserTypeIdAndApiId(userTypeId int, apiId []int) (err error)
+}
+
+type IVersionRepo interface {
+	InsertVersion(req models.Version) (res models.Version, err error)
+	SelectVersionByVersion(version string) (res models.Version, err error)
+	UpdateVersion(req models.Version) (res models.Version, err error)
 }
