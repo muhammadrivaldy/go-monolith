@@ -4,20 +4,25 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"time"
 )
 
 type FilterQuery struct {
 	Conditions  []Condition
-	Limit, Page int
+	Limit, Page int64
+	Sort        []Sorting
+}
+
+type Sorting struct {
+	Field, Type string
 }
 
 type Condition struct {
-	Field     string
-	Operation string
-	Value     interface{}
+	Field, Operation string
+	Value            interface{}
 }
 
-func (filter FilterQuery) BuildQuery() (query string, arguments []interface{}) {
+func (filter FilterQuery) BuildQuery() (query, sorting string, arguments []interface{}) {
 
 	conditions := []string{}
 
@@ -36,15 +41,15 @@ func (filter FilterQuery) BuildQuery() (query string, arguments []interface{}) {
 
 		if i.Operation == "and" || i.Operation == "or" || i.Operation == "(" || i.Operation == ")" {
 			conditions = append(conditions, i.Operation)
-		} else if i.Operation == "=" || i.Operation == ">" || i.Operation == "<" || i.Operation == ">=" || i.Operation == "<=" || i.Operation == "!=" || i.Operation == "like" {
+		} else if i.Operation == "=" || i.Operation == ">" || i.Operation == "<" || i.Operation == ">=" || i.Operation == "<=" || i.Operation == "!=" || i.Operation == "like" || i.Operation == "<>" {
 			conditions = append(conditions, fmt.Sprintf("%s ?", i.Operation))
-		} else if i.Operation == "in" && typeOfValue == reflect.Array {
+		} else if i.Operation == "in" && (typeOfValue == reflect.Slice || typeOfValue == reflect.Array) {
 			params := []string{}
 			for i := 0; i < valueOfValue.Len(); i++ {
 				params = append(params, "?")
 			}
 
-			conditions = append(conditions, fmt.Sprintf("(%s)", strings.Join(params, ",")))
+			conditions = append(conditions, fmt.Sprintf("in (%s)", strings.Join(params, ",")))
 		}
 
 		if typeOfValue == reflect.String {
@@ -55,16 +60,27 @@ func (filter FilterQuery) BuildQuery() (query string, arguments []interface{}) {
 			arguments = append(arguments, i.Value)
 		} else if typeOfValue == reflect.Float32 || typeOfValue == reflect.Float64 {
 			arguments = append(arguments, i.Value)
-		} else if typeOfValue == reflect.Array {
+		} else if typeOfValue == reflect.Slice || typeOfValue == reflect.Array {
 			for i := 0; i < valueOfValue.Len(); i++ {
-				arguments = append(arguments, valueOfValue.Index(i))
+				arguments = append(arguments, valueOfValue.Index(i).Interface())
+			}
+		} else {
+			if reflect.TypeOf(i.Value) == reflect.TypeOf(time.Time{}) {
+				arguments = append(arguments, i.Value)
 			}
 		}
 	}
 
-	return strings.Join(conditions, " "), arguments
+	sorts := []string{}
+	for _, i := range filter.Sort {
+		if i.Field != "" && i.Type != "" {
+			sorts = append(sorts, fmt.Sprintf("%s %s", i.Field, i.Type))
+		}
+	}
+
+	return strings.Join(conditions, " "), strings.Join(sorts, ","), arguments
 }
 
-func (filter FilterQuery) GetOffset() int {
+func (filter FilterQuery) GetOffset() int64 {
 	return (filter.Page - 1) * filter.Limit
 }
