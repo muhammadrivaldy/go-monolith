@@ -1,4 +1,4 @@
-package http
+package rest
 
 import (
 	"backend/handler/security/payload"
@@ -10,15 +10,12 @@ import (
 	goutil "github.com/muhammadrivaldy/go-util"
 )
 
-func (e *endpoint) UpdatePassword(c *gin.Context) {
+func (e endpoint) GetAccessApi(c *gin.Context) {
 
-	// set payload
-	payload := payload.RequestUpdatePassword{
-		UserId:   util.StringToInt(c.Param("user_id")),
-		Password: c.PostForm("password"),
-	}
+	// get payload
+	payload := payload.RequestGetAccessApi{UserType: util.StringToInt(c.Param("user_type"))}
 
-	// validate payload
+	// validate
 	if err := e.validation.ValidationStruct(payload); err != nil {
 		goutil.ResponseError(c, http.StatusBadRequest, util.ErrorIncorrectInput, nil)
 		return
@@ -27,9 +24,8 @@ func (e *endpoint) UpdatePassword(c *gin.Context) {
 	ctx := goutil.ParseContext(c)
 
 	// call service
-	response, errs := middleware.WrapUseCase(ctx, payload, func() (interface{}, util.Error) {
-		errs := e.useCaseSecurity.UpdatePassword(ctx, payload)
-		return nil, errs
+	res, errs := middleware.WrapUseCase(ctx, payload, func() (interface{}, util.Error) {
+		return e.useCaseSecurity.GetAccessApi(ctx, payload)
 	})
 	if errs.IsError() {
 		goutil.ResponseError(c, errs.Code, errs.Error, nil)
@@ -37,5 +33,6 @@ func (e *endpoint) UpdatePassword(c *gin.Context) {
 	}
 
 	// response
-	goutil.ResponseOK(c, http.StatusOK, response)
+	goutil.ResponseOK(c, http.StatusOK, res)
+
 }

@@ -1,4 +1,4 @@
-package http
+package rest
 
 import (
 	"backend/handler/security/payload"

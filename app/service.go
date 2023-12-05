@@ -2,7 +2,7 @@ package main
 
 import (
 	"backend/config"
-	securityHttp "backend/handler/security/delivery/http"
+	securityRest "backend/handler/security/delivery/rest"
 	securityEntity "backend/handler/security/entity"
 	securityUseCase "backend/handler/security/usecase"
 	usersEntity "backend/handler/users/entity"
@@ -33,5 +33,5 @@ func service(
 	usersUseCase := usersUseCase.NewUseCase(config, usersEntity)
 
 	// call the function of method endpoint
-	securityHttp.NewEndpoint(config, route, securityUseCase, usersUseCase, validate)
+	securityRest.NewEndpoint(config, route, securityUseCase, usersUseCase, validate)
 }

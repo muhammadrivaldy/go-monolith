@@ -1,4 +1,4 @@
-package http
+package rest
 
 import (
 	"backend/handler/security/payload"
@@ -10,12 +10,17 @@ import (
 	goutil "github.com/muhammadrivaldy/go-util"
 )
 
-func (e endpoint) GetAccessApi(c *gin.Context) {
+func (e *endpoint) Login(c *gin.Context) {
 
-	// get payload
-	payload := payload.RequestGetAccessApi{UserType: util.StringToInt(c.Param("user_type"))}
+	email, password, _ := c.Request.BasicAuth()
 
-	// validate
+	// set payload
+	payload := payload.RequestLogin{
+		Email:    email,
+		Password: password,
+	}
+
+	// validate payload
 	if err := e.validation.ValidationStruct(payload); err != nil {
 		goutil.ResponseError(c, http.StatusBadRequest, util.ErrorIncorrectInput, nil)
 		return
@@ -24,8 +29,8 @@ func (e endpoint) GetAccessApi(c *gin.Context) {
 	ctx := goutil.ParseContext(c)
 
 	// call service
-	res, errs := middleware.WrapUseCase(ctx, payload, func() (interface{}, util.Error) {
-		return e.useCaseSecurity.GetAccessApi(ctx, payload)
+	response, errs := middleware.WrapUseCase(ctx, payload, func() (interface{}, util.Error) {
+		return e.useCaseSecurity.Login(ctx, payload)
 	})
 	if errs.IsError() {
 		goutil.ResponseError(c, errs.Code, errs.Error, nil)
@@ -33,6 +38,5 @@ func (e endpoint) GetAccessApi(c *gin.Context) {
 	}
 
 	// response
-	goutil.ResponseOK(c, http.StatusOK, res)
-
+	goutil.ResponseOK(c, http.StatusOK, response)
 }

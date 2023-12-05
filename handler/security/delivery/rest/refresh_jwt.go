@@ -1,4 +1,4 @@
-package http
+package rest
 
 import (
 	"backend/middleware"
@@ -9,20 +9,17 @@ import (
 	goutil "github.com/muhammadrivaldy/go-util"
 )
 
-func (e endpoint) GetServices(c *gin.Context) {
+func (e *endpoint) RefreshJWT(c *gin.Context) {
 
 	ctx := goutil.ParseContext(c)
 
-	// call services
 	res, errs := middleware.WrapUseCase(ctx, nil, func() (interface{}, util.Error) {
-		return e.useCaseSecurity.GetServices(ctx)
+		return e.useCaseSecurity.RefreshJWT(ctx)
 	})
-	if errs.IsError() {
+	if errs.Error != nil {
 		goutil.ResponseError(c, errs.Code, errs.Error, nil)
 		return
 	}
 
-	// response
 	goutil.ResponseOK(c, http.StatusOK, res)
-
 }

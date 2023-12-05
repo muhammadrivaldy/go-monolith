@@ -8,7 +8,6 @@ import (
 	"io"
 	"os"
 	"strconv"
-	"time"
 
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
@@ -37,7 +36,7 @@ func main() {
 
 	// logging
 	var osLog *os.File
-	if createOutputLog == true {
+	if createOutputLog {
 
 		defer osLog.Close()
 		osLog, err = goutil.OpenFile(pathLog, "service.log")
@@ -97,15 +96,4 @@ func main() {
 
 	// run the service
 	route.Run(fmt.Sprintf(":%d", config.Port))
-}
-
-func filenameLog() string {
-	var timeNow = time.Now()
-	year := timeNow.Year()
-	month := timeNow.Month()
-	day := timeNow.Day()
-	minute := timeNow.Minute()
-	second := timeNow.Second()
-
-	return fmt.Sprintf("log_%d%02d%02d%02d%02d.log", year, month, day, minute, second)
 }
