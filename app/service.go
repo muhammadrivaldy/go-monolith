@@ -17,13 +17,20 @@ func service(
 	config config.Configuration,
 	validate goutil.Validation) {
 
-	// call the function of method entity
-	securityEntity, err := securityEntity.NewEntity(config)
+	clientGorm, err := databaseClient(config)
 	if err != nil {
 		panic(err)
 	}
 
-	usersEntity, err := usersEntity.NewEntity(config)
+	clientRedis := redisClient(config)
+
+	// call the function of method entity
+	securityEntity, err := securityEntity.NewEntity(clientGorm, clientRedis)
+	if err != nil {
+		panic(err)
+	}
+
+	usersEntity, err := usersEntity.NewEntity(clientGorm, clientRedis)
 	if err != nil {
 		panic(err)
 	}
