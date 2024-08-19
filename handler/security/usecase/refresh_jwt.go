@@ -22,7 +22,7 @@ func (s *securityUseCase) RefreshJWT(ctx context.Context) (res payload.ResponseL
 
 	userInfo := util.GetContext(ctx)
 
-	modelUser, err := s.userEntity.UserRepo.SelectUserById(userInfo.UserId)
+	modelUser, err := s.userEntity.UserRepo.SelectUserByID(userInfo.UserID)
 	if err == gorm.ErrRecordNotFound {
 		logs.Logging.Warning(ctx, err)
 		return res, util.ErrorMapping(util.ErrorDataNotFound)
@@ -36,7 +36,7 @@ func (s *securityUseCase) RefreshJWT(ctx context.Context) (res payload.ResponseL
 		return res, util.ErrorMapping(util.ErrorDataNotFound)
 	}
 
-	res.UserId = modelUser.Id
+	res.UserID = modelUser.ID
 
 	res.Token, err = createToken(modelUser, s.config.JWTKey)
 	if err != nil {
@@ -59,11 +59,11 @@ func createRefreshToken(modelUser models.User, jwtKey string) (string, error) {
 		SignMethod: jwt.SigningMethodHS256,
 		Key:        jwtKey,
 		Data: jwt.MapClaims{
-			"user_id":   modelUser.Id,
+			"user_id":   modelUser.ID,
 			"name":      modelUser.Name,
 			"email":     modelUser.Email,
 			"exp":       time.Now().AddDate(0, 0, 30).Unix(),
-			"user_type": modelUser.UserTypeId,
+			"user_type": modelUser.UserTypeID,
 			"type":      "refresh-token",
 		},
 	}

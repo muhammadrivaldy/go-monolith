@@ -70,7 +70,7 @@ func main() {
 	}
 
 	// third-party telegram
-	telegram, _ := goutil.NewTele(configuration.ThirdParty.Telegram.Token, configuration.ThirdParty.Telegram.ChatId)
+	telegram, _ := goutil.NewTele(configuration.ThirdParty.Telegram.Token, configuration.ThirdParty.Telegram.ChatID)
 
 	// logs service
 	logs.Logging, err = goutil.NewLog(osLog, telegram, createOutputLog)

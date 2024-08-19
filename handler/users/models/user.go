@@ -7,13 +7,13 @@ import (
 )
 
 type User struct {
-	Id         int64        `json:"id" gorm:"column:id"`
+	ID         int64        `json:"id" gorm:"column:id"`
 	Name       string       `json:"name" gorm:"column:name"`
 	Phone      string       `json:"phone" gorm:"column:phone"`
 	Email      string       `json:"email" gorm:"column:email"`
-	Status     UserStatusId `json:"status" gorm:"column:status"`
+	Status     UserStatusID `json:"status" gorm:"column:status"`
 	Password   string       `json:"-" gorm:"column:password"`
-	UserTypeId UserTypeId   `json:"user_type_id" gorm:"column:user_type_id"`
+	UserTypeID UserTypeID   `json:"user_type_id" gorm:"column:user_type_id"`
 	CreatedBy  int64        `json:"created_by" gorm:"column:created_by"`
 	CreatedAt  time.Time    `json:"created_at" gorm:"column:created_at"`
 	UpdatedBy  int64        `json:"updated_by" gorm:"column:updated_by"`
@@ -37,5 +37,5 @@ func (u *User) ValidatePassword(password string) bool {
 }
 
 func (u *User) IsExists() bool {
-	return u.Id > 0
+	return u.ID > 0
 }

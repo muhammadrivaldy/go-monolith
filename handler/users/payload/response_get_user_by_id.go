@@ -1,7 +1,7 @@
 package payload
 
-type ResponseGetUserById struct {
-	Id           int64  `json:"id"`
+type ResponseGetUserByID struct {
+	ID           int64  `json:"id"`
 	Name         string `json:"name"`
 	PhoneNumber  string `json:"phone_number"`
 	Email        string `json:"email"`

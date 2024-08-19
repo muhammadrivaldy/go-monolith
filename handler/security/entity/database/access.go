@@ -61,16 +61,16 @@ func (a accessRepo) SelectAccessByFilter(ctx context.Context, req util.FilterQue
 }
 
 func (a accessRepo) UpdateAccess(req models.Access) (res models.Access, err error) {
-	err = a.dbGorm.Model(&models.Access{}).Where(`id = ?`, req.Id).Updates(req).First(&res).Error
+	err = a.dbGorm.Model(&models.Access{}).Where(`id = ?`, req.ID).Updates(req).First(&res).Error
 	return
 }
 
-func (a accessRepo) SelectAccessByUserType(userTypeId int) (res []models.Access, err error) {
-	err = a.dbGorm.Where("user_type_id = ?", userTypeId).Find(&res).Error
+func (a accessRepo) SelectAccessByUserType(userTypeID int) (res []models.Access, err error) {
+	err = a.dbGorm.Where("user_type_id = ?", userTypeID).Find(&res).Error
 	return
 }
 
-func (a accessRepo) DeleteAccessesByUserTypeIdAndApiId(userTypeId int, apiId []int) (err error) {
-	err = a.dbGorm.Where("user_type_id = ? and api_id in (?)", userTypeId, apiId).Delete(&models.Access{}).Error
+func (a accessRepo) DeleteAccessesByUserTypeIDAndApiID(userTypeID int, apiID []int) (err error) {
+	err = a.dbGorm.Where("user_type_id = ? and api_id in (?)", userTypeID, apiID).Delete(&models.Access{}).Error
 	return
 }

@@ -39,7 +39,7 @@ func (s *securityUseCase) Login(ctx context.Context, req payload.RequestLogin) (
 		return res, util.ErrorMapping(util.ErrorUnauthorized)
 	}
 
-	res.UserId = modelUser.Id
+	res.UserID = modelUser.ID
 
 	res.Token, err = createToken(modelUser, s.config.JWTKey)
 	if err != nil {
@@ -62,11 +62,11 @@ func createToken(modelUser models.User, jwtKey string) (string, error) {
 		SignMethod: jwt.SigningMethodHS256,
 		Key:        jwtKey,
 		Data: jwt.MapClaims{
-			"user_id":   modelUser.Id,
+			"user_id":   modelUser.ID,
 			"name":      modelUser.Name,
 			"email":     modelUser.Email,
 			"exp":       time.Now().AddDate(0, 0, 1).Unix(),
-			"user_type": modelUser.UserTypeId,
+			"user_type": modelUser.UserTypeID,
 			"type":      "main-token",
 		},
 	}

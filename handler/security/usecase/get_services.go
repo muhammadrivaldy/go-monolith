@@ -18,7 +18,7 @@ func (s *securityUseCase) GetServices(ctx context.Context) (res []payload.Respon
 
 	for _, i := range services {
 		res = append(res, payload.ResponseGetServices{
-			ServiceID:   int(i.Id),
+			ServiceID:   int(i.ID),
 			ServiceName: i.Name,
 		})
 	}

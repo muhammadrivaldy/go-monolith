@@ -40,12 +40,12 @@ func (a apiRepo) SelectApiByEndpoint(endpoint, method string) (res models.Api, e
 	return
 }
 
-func (a apiRepo) SelectApisByServiceId(serviceId int) (res []models.Api, err error) {
-	err = a.dbGorm.Where("service_id = ?", serviceId).Find(&res).Error
+func (a apiRepo) SelectApisByServiceID(serviceID int) (res []models.Api, err error) {
+	err = a.dbGorm.Where("service_id = ?", serviceID).Find(&res).Error
 	return
 }
 
 func (a apiRepo) UpdateApi(req models.Api) (res models.Api, err error) {
-	err = a.dbGorm.Model(&models.Api{}).Where("id = ?", req.Id).Updates(req).First(&res).Error
+	err = a.dbGorm.Model(&models.Api{}).Where("id = ?", req.ID).Updates(req).First(&res).Error
 	return
 }

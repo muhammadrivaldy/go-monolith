@@ -27,6 +27,6 @@ func (v *versionRepo) SelectVersionByVersion(version string) (res models.Version
 }
 
 func (v *versionRepo) UpdateVersion(req models.Version) (res models.Version, err error) {
-	err = v.dbGorm.Model(&models.Version{}).Where("id = ?", req.Id).Updates(req).First(&res).Error
+	err = v.dbGorm.Model(&models.Version{}).Where("id = ?", req.ID).Updates(req).First(&res).Error
 	return
 }

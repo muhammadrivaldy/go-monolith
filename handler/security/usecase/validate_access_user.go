@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (s *securityUseCase) ValidateAccessUser(ctx context.Context, apiId string) (res bool, errs util.Error) {
+func (s *securityUseCase) ValidateAccessUser(ctx context.Context, apiID string) (res bool, errs util.Error) {
 
 	ctx, span := tracer.Tracer.Start(ctx, "UseCase: ValidateAccessUser")
 	defer span.End()
@@ -18,7 +18,7 @@ func (s *securityUseCase) ValidateAccessUser(ctx context.Context, apiId string) 
 
 	// prepare a filter
 	filter := util.FilterQuery{}
-	filter.Conditions = append(filter.Conditions, util.Condition{Field: "api_id", Operation: "=", Value: apiId})
+	filter.Conditions = append(filter.Conditions, util.Condition{Field: "api_id", Operation: "=", Value: apiID})
 	filter.Conditions = append(filter.Conditions, util.Condition{Operation: "and"})
 	filter.Conditions = append(filter.Conditions, util.Condition{Field: "user_type_id", Operation: "=", Value: userInfo.UserType})
 

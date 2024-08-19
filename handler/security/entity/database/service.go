@@ -21,7 +21,7 @@ func (s serviceRepo) InsertService(req models.Service) (res models.Service, err 
 	return req, err
 }
 
-func (s serviceRepo) SelectServiceById(id int) (res models.Service, err error) {
+func (s serviceRepo) SelectServiceByID(id int) (res models.Service, err error) {
 	err = s.dbGorm.Where("id = ?", id).First(&res).Error
 	return
 }

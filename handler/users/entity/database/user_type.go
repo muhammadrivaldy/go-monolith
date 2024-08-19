@@ -15,7 +15,7 @@ func NewUserTypeRepo(dbGorm *gorm.DB) users.IUserTypeRepo {
 	return userTypeRepo{dbGorm: dbGorm}
 }
 
-func (u userTypeRepo) SelectUserTypeById(id int) (res models.UserType, err error) {
+func (u userTypeRepo) SelectUserTypeByID(id int) (res models.UserType, err error) {
 	err = u.dbGorm.Where("id = ?", id).First(&res).Error
 	return
 }

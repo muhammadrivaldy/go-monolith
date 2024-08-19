@@ -19,7 +19,7 @@ func (s *securityUseCase) PatchAccessApi(ctx context.Context, req payload.Reques
 	userInfo := util.GetContext(ctx)
 
 	// validate user type
-	if _, err := s.userEntity.UserTypeRepo.SelectUserTypeById(req.UserType); err == gorm.ErrRecordNotFound {
+	if _, err := s.userEntity.UserTypeRepo.SelectUserTypeByID(req.UserType); err == gorm.ErrRecordNotFound {
 		logs.Logging.Warning(ctx, err)
 		return util.ErrorMapping(util.ErrorDataNotFound)
 	} else if err != nil {
@@ -34,46 +34,46 @@ func (s *securityUseCase) PatchAccessApi(ctx context.Context, req payload.Reques
 		return util.ErrorMapping(err)
 	}
 
-	apiId := []int{}
+	apiID := []int{}
 	for _, i := range access {
-		apiId = append(apiId, i.ApiId)
+		apiID = append(apiID, i.ApiID)
 	}
 
-	sort.Ints(apiId)
-	sort.Ints(req.ApiId)
+	sort.Ints(apiID)
+	sort.Ints(req.ApiID)
 
-	logs.Logging.Info(ctx, fmt.Sprintf("%+v", req.ApiId))
+	logs.Logging.Info(ctx, fmt.Sprintf("%+v", req.ApiID))
 
-	apiIdToBeInsert := []int{}
-	apiIdToBeDelete := []int{}
+	apiIDToBeInsert := []int{}
+	apiIDToBeDelete := []int{}
 
-	if len(apiId) == 0 {
+	if len(apiID) == 0 {
 
-		apiIdToBeInsert = append(apiIdToBeInsert, req.ApiId...)
+		apiIDToBeInsert = append(apiIDToBeInsert, req.ApiID...)
 
-	} else if len(req.ApiId) == 0 {
+	} else if len(req.ApiID) == 0 {
 
-		apiIdToBeDelete = append(apiIdToBeDelete, apiId...)
+		apiIDToBeDelete = append(apiIDToBeDelete, apiID...)
 
 	} else {
 
-		for i := 0; i < len(apiId); i++ {
-			idx, _, exists := util.SearchIntInArray(apiId[i], req.ApiId)
+		for i := 0; i < len(apiID); i++ {
+			idx, _, exists := util.SearchIntInArray(apiID[i], req.ApiID)
 			if exists {
-				temp := req.ApiId[:idx]
-				temp = append(temp, req.ApiId[idx+1:]...)
-				req.ApiId = temp
+				temp := req.ApiID[:idx]
+				temp = append(temp, req.ApiID[idx+1:]...)
+				req.ApiID = temp
 			} else {
-				apiIdToBeDelete = append(apiIdToBeDelete, apiId[i])
-				temp := apiId[:i]
-				temp = append(temp, apiId[i+1:]...)
-				apiId = temp
+				apiIDToBeDelete = append(apiIDToBeDelete, apiID[i])
+				temp := apiID[:i]
+				temp = append(temp, apiID[i+1:]...)
+				apiID = temp
 				i--
 			}
 
-			if (len(apiId) - 1) == i {
-				if len(req.ApiId) > 0 {
-					apiIdToBeInsert = append(apiIdToBeInsert, req.ApiId...)
+			if (len(apiID) - 1) == i {
+				if len(req.ApiID) > 0 {
+					apiIDToBeInsert = append(apiIDToBeInsert, req.ApiID...)
 				}
 			}
 		}
@@ -84,13 +84,13 @@ func (s *securityUseCase) PatchAccessApi(ctx context.Context, req payload.Reques
 	timeNow := time.Now()
 
 	// insert access if exists
-	if len(apiIdToBeInsert) > 0 {
+	if len(apiIDToBeInsert) > 0 {
 		accesses := []models.Access{}
-		for _, i := range apiIdToBeInsert {
+		for _, i := range apiIDToBeInsert {
 			accesses = append(accesses, models.Access{
-				UserTypeId: req.UserType,
-				ApiId:      i,
-				CreatedBy:  userInfo.UserId,
+				UserTypeID: req.UserType,
+				ApiID:      i,
+				CreatedBy:  userInfo.UserID,
 				CreatedAt:  timeNow,
 			})
 
@@ -102,8 +102,8 @@ func (s *securityUseCase) PatchAccessApi(ctx context.Context, req payload.Reques
 	}
 
 	// delete access if exists
-	if len(apiIdToBeDelete) > 0 {
-		if err = s.securityEntity.AccessRepo.DeleteAccessesByUserTypeIdAndApiId(req.UserType, apiIdToBeDelete); err != nil {
+	if len(apiIDToBeDelete) > 0 {
+		if err = s.securityEntity.AccessRepo.DeleteAccessesByUserTypeIDAndApiID(req.UserType, apiIDToBeDelete); err != nil {
 			logs.Logging.Error(ctx, err)
 			return util.ErrorMapping(err)
 		}

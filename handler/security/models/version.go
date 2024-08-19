@@ -3,7 +3,7 @@ package models
 import "time"
 
 type Version struct {
-	Id        int       `json:"id" gorm:"column:id"`
+	ID        int       `json:"id" gorm:"column:id"`
 	Version   string    `json:"version" gorm:"column:version"`
 	Support   bool      `json:"support" gorm:"column:support"`
 	CreatedBy int64     `json:"created_by" gorm:"column:created_by"`

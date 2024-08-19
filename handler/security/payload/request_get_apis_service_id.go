@@ -1,5 +1,5 @@
 package payload
 
-type RequestGetApisServiceId struct {
+type RequestGetApisServiceID struct {
 	ServiceID int `json:"service_id"`
 }

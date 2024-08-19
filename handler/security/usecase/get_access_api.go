@@ -13,7 +13,7 @@ import (
 func (s *securityUseCase) GetAccessApi(ctx context.Context, req payload.RequestGetAccessApi) (res payload.ResponseGetAccessApi, errs util.Error) {
 
 	// validate user type
-	_, err := s.userEntity.UserTypeRepo.SelectUserTypeById(req.UserType)
+	_, err := s.userEntity.UserTypeRepo.SelectUserTypeByID(req.UserType)
 	if err == gorm.ErrRecordNotFound {
 		logs.Logging.Warning(ctx, err)
 		return res, util.ErrorMapping(util.ErrorDataNotFound)
@@ -31,11 +31,11 @@ func (s *securityUseCase) GetAccessApi(ctx context.Context, req payload.RequestG
 
 	// mapping api id to response
 	for _, i := range access {
-		res.ApiId = append(res.ApiId, int(i.ApiId))
+		res.ApiID = append(res.ApiID, int(i.ApiID))
 	}
 
 	// sorting elements
-	sort.Ints(res.ApiId)
+	sort.Ints(res.ApiID)
 
 	// response
 	return

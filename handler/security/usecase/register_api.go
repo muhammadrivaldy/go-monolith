@@ -24,11 +24,11 @@ func (s *securityUseCase) RegisterApi(ctx context.Context, req *payload.RequestR
 	}
 
 	// if result id is zero, insert the api
-	if resApi.Id == "" {
+	if resApi.ID == "" {
 
 		// register endpoint with service id
 		resApi, err = s.securityEntity.ApiRepo.InsertApi(models.Api{
-			Id:        req.ID,
+			ID:        req.ID,
 			Name:      req.Name,
 			Endpoint:  req.Endpoint,
 			Method:    req.Method,
@@ -46,7 +46,7 @@ func (s *securityUseCase) RegisterApi(ctx context.Context, req *payload.RequestR
 		if resApi.Name != req.Name || resApi.Endpoint != req.Endpoint || resApi.Method != req.Method || resApi.ServiceID != req.ServiceID {
 
 			if _, err = s.securityEntity.ApiRepo.UpdateApi(models.Api{
-				Id:        resApi.Id,
+				ID:        resApi.ID,
 				Name:      req.Name,
 				Endpoint:  req.Endpoint,
 				Method:    req.Method,

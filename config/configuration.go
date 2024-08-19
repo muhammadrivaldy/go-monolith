@@ -21,7 +21,7 @@ type Configuration struct {
 	ThirdParty struct {
 		Telegram struct {
 			Token  string `json:"token" env:"TELEGRAM_TOKEN"`
-			ChatId int64  `json:"chat_id" env:"TELEGRAM_CHAT_ID"`
+			ChatID int64  `json:"chat_id" env:"TELEGRAM_CHAT_ID"`
 		} `json:"telegram"`
 	} `json:"third_party"`
 	Emails struct {

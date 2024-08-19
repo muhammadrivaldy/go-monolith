@@ -3,6 +3,7 @@ package rest
 import (
 	"backend/handler/security/payload"
 	"backend/middleware"
+	"backend/tracer"
 	"backend/util"
 	"net/http"
 
@@ -12,6 +13,10 @@ import (
 
 func (e endpoint) GetAccessApi(c *gin.Context) {
 
+	ctx := goutil.ParseContext(c)
+	ctx, span := tracer.Tracer.Start(ctx, "REST: GetAccessApi")
+	defer span.End()
+
 	// get payload
 	payload := payload.RequestGetAccessApi{UserType: util.StringToInt(c.Param("user_type"))}
 
@@ -20,8 +25,6 @@ func (e endpoint) GetAccessApi(c *gin.Context) {
 		goutil.ResponseError(c, http.StatusBadRequest, util.ErrorIncorrectInput, validationErrors)
 		return
 	}
-
-	ctx := goutil.ParseContext(c)
 
 	// call service
 	res, errs := middleware.WrapUseCase(ctx, payload, func() (interface{}, util.Error) {

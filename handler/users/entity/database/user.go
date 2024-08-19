@@ -27,7 +27,7 @@ func (u userRepo) InsertUser(req models.User) (res models.User, err error) {
 	return req, err
 }
 
-func (u userRepo) SelectUserById(id int64) (res models.User, err error) {
+func (u userRepo) SelectUserByID(id int64) (res models.User, err error) {
 
 	result, _ := u.redis.Get(context.Background(), fmt.Sprintf("user-id:%d", id)).Bytes()
 
@@ -61,12 +61,12 @@ func (u userRepo) SelectUserByPhone(phone string) (res models.User, err error) {
 	return
 }
 
-func (u userRepo) SelectUsersById(id []int64) (res []models.User, err error) {
+func (u userRepo) SelectUsersByID(id []int64) (res []models.User, err error) {
 	err = u.dbGorm.Where("id in (?)", id).Find(&res).Error
 	return
 }
 
 func (u userRepo) UpdateUser(req models.User) (res models.User, err error) {
-	err = u.dbGorm.Model(&models.User{}).Where("id = ?", req.Id).Updates(req).First(&res).Error
+	err = u.dbGorm.Model(&models.User{}).Where("id = ?", req.ID).Updates(req).First(&res).Error
 	return
 }

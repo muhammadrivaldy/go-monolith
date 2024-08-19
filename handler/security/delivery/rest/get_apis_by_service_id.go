@@ -10,10 +10,10 @@ import (
 	goutil "github.com/muhammadrivaldy/go-util"
 )
 
-func (e endpoint) GetApisByServiceId(c *gin.Context) {
+func (e endpoint) GetApisByServiceID(c *gin.Context) {
 
 	// get payload
-	payload := payload.RequestGetApisServiceId{
+	payload := payload.RequestGetApisServiceID{
 		ServiceID: util.StringToInt(c.Param("service_id")),
 	}
 
@@ -21,7 +21,7 @@ func (e endpoint) GetApisByServiceId(c *gin.Context) {
 
 	// call service
 	res, errs := middleware.WrapUseCase(ctx, payload, func() (interface{}, util.Error) {
-		return e.useCaseSecurity.GetApisByServiceId(ctx, payload)
+		return e.useCaseSecurity.GetApisByServiceID(ctx, payload)
 	})
 	if errs.IsError() {
 		goutil.ResponseError(c, errs.Code, errs.Error, nil)

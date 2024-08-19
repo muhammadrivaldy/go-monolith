@@ -31,7 +31,7 @@ func (m middleware) ValidateAccess(apiID string) func(c *gin.Context) {
 
 		userInfo := util.GetContext(ctx)
 
-		modelUser, errs := m.useCaseUser.GetUserById(ctx, payload.RequestGetUserById{UserId: userInfo.UserId})
+		modelUser, errs := m.useCaseUser.GetUserByID(ctx, payload.RequestGetUserByID{UserID: userInfo.UserID})
 		if errs.Error != nil {
 			goutil.ResponseError(c, errs.Code, errs.Error, errs.Object)
 			c.Abort()

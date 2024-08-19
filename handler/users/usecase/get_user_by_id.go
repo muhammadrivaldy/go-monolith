@@ -10,10 +10,10 @@ import (
 	"gorm.io/gorm"
 )
 
-func (u userUseCase) GetUserById(ctx context.Context, req payload.RequestGetUserById) (res payload.ResponseGetUserById, errs util.Error) {
+func (u userUseCase) GetUserByID(ctx context.Context, req payload.RequestGetUserByID) (res payload.ResponseGetUserByID, errs util.Error) {
 
 	// get user
-	user, err := u.userEntity.UserRepo.SelectUserById(req.UserId)
+	user, err := u.userEntity.UserRepo.SelectUserByID(req.UserID)
 	if err == gorm.ErrRecordNotFound {
 		logs.Logging.Warning(ctx, err)
 		return res, util.ErrorMapping(util.ErrorDataNotFound)
@@ -28,14 +28,14 @@ func (u userUseCase) GetUserById(ctx context.Context, req payload.RequestGetUser
 	}
 
 	// set response
-	return payload.ResponseGetUserById{
-		Id:           user.Id,
+	return payload.ResponseGetUserByID{
+		ID:           user.ID,
 		Name:         user.Name,
 		PhoneNumber:  user.Phone,
 		Email:        user.Email,
 		Status:       int(user.Status),
 		StatusName:   user.Status.String(),
-		UserType:     int(user.UserTypeId),
-		UserTypeName: user.UserTypeId.String(),
+		UserType:     int(user.UserTypeID),
+		UserTypeName: user.UserTypeID.String(),
 	}, util.ErrorMapping(nil)
 }

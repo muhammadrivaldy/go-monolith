@@ -19,7 +19,7 @@ func (s securityUseCase) EditPassword(ctx context.Context, req payload.RequestEd
 	userInfo := util.GetContext(ctx)
 
 	// get user
-	user, err := s.userEntity.UserRepo.SelectUserById(int64(req.UserId))
+	user, err := s.userEntity.UserRepo.SelectUserByID(int64(req.UserID))
 	if err == gorm.ErrRecordNotFound {
 		logs.Logging.Error(ctx, err)
 		return util.ErrorMapping(util.ErrorDataNotFound)
@@ -35,7 +35,7 @@ func (s securityUseCase) EditPassword(ctx context.Context, req payload.RequestEd
 		return util.ErrorMapping(err)
 	}
 
-	user.UpdatedBy = userInfo.UserId
+	user.UpdatedBy = userInfo.UserID
 	user.UpdatedAt = time.Now()
 
 	// update the user password

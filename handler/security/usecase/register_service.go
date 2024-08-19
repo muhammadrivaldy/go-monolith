@@ -19,7 +19,7 @@ func (s *securityUseCase) RegisterService(ctx context.Context, serviceName strin
 	}
 
 	// register service name
-	if res.Id == 0 {
+	if res.ID == 0 {
 		res, err = s.securityEntity.ServiceRepo.InsertService(models.Service{
 			Name:      serviceName,
 			CreatedAt: time.Now(),
@@ -31,5 +31,5 @@ func (s *securityUseCase) RegisterService(ctx context.Context, serviceName strin
 	}
 
 	// send result id of service name
-	return res.Id, util.ErrorMapping(nil)
+	return res.ID, util.ErrorMapping(nil)
 }

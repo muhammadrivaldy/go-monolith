@@ -5,7 +5,7 @@ import (
 )
 
 type Api struct {
-	Id        string    `json:"id" gorm:"column:id"`
+	ID        string    `json:"id" gorm:"column:id"`
 	Name      string    `json:"name" gorm:"column:name"`
 	Endpoint  string    `json:"endpoint" gorm:"column:endpoint"`
 	Method    string    `json:"method" gorm:"column:method"`
