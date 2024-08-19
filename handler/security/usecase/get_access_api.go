@@ -3,6 +3,7 @@ package usecase
 import (
 	"backend/handler/security/payload"
 	"backend/logs"
+	"backend/tracer"
 	"backend/util"
 	"context"
 	"sort"
@@ -11,6 +12,9 @@ import (
 )
 
 func (s *securityUseCase) GetAccessApi(ctx context.Context, req payload.RequestGetAccessApi) (res payload.ResponseGetAccessApi, errs util.Error) {
+
+	ctx, span := tracer.Tracer.Start(ctx, "UseCase: GetAccessApi")
+	defer span.End()
 
 	// validate user type
 	_, err := s.userEntity.UserTypeRepo.SelectUserTypeByID(req.UserType)

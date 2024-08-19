@@ -3,6 +3,7 @@ package usecase
 import (
 	"backend/handler/security/payload"
 	"backend/logs"
+	"backend/tracer"
 	"backend/util"
 	"context"
 
@@ -10,6 +11,9 @@ import (
 )
 
 func (s *securityUseCase) GetApisByServiceID(ctx context.Context, req payload.RequestGetApisServiceID) (res []payload.ResponseGetApisServiceID, errs util.Error) {
+
+	ctx, span := tracer.Tracer.Start(ctx, "UseCase: GetApisByServiceID")
+	defer span.End()
 
 	// validate service id
 	_, err := s.securityEntity.ServiceRepo.SelectServiceByID(req.ServiceID)

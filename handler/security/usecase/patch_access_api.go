@@ -4,6 +4,7 @@ import (
 	"backend/handler/security/models"
 	"backend/handler/security/payload"
 	"backend/logs"
+	"backend/tracer"
 	"backend/util"
 	"context"
 	"fmt"
@@ -14,6 +15,9 @@ import (
 )
 
 func (s *securityUseCase) PatchAccessApi(ctx context.Context, req payload.RequestPatchAccessApi) (errs util.Error) {
+
+	ctx, span := tracer.Tracer.Start(ctx, "UseCase: PatchAccessApi")
+	defer span.End()
 
 	// get info
 	userInfo := util.GetContext(ctx)

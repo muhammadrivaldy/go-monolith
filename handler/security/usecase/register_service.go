@@ -3,6 +3,7 @@ package usecase
 import (
 	"backend/handler/security/models"
 	"backend/logs"
+	"backend/tracer"
 	"backend/util"
 	"context"
 	"time"
@@ -11,6 +12,9 @@ import (
 )
 
 func (s *securityUseCase) RegisterService(ctx context.Context, serviceName string) (id int64, errs util.Error) {
+
+	ctx, span := tracer.Tracer.Start(ctx, "UseCase: RegisterService")
+	defer span.End()
 
 	res, err := s.securityEntity.ServiceRepo.SelectServiceByName(serviceName)
 	if err != nil && err != gorm.ErrRecordNotFound {
