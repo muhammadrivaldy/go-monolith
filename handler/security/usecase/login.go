@@ -20,7 +20,7 @@ func (s *securityUseCase) Login(ctx context.Context, req payload.RequestLogin) (
 	ctx, span := tracer.Tracer.Start(ctx, "UseCase: Login")
 	defer span.End()
 
-	modelUser, err := s.userEntity.UserRepo.SelectUserByEmail(req.Email)
+	modelUser, err := s.userEntity.UserRepo.SelectUserByEmail(ctx, req.Email)
 	if err == gorm.ErrRecordNotFound {
 		logs.Logging.Warning(ctx, err)
 		return res, util.ErrorMapping(util.ErrorUnauthorized)

@@ -23,7 +23,7 @@ func (s *securityUseCase) PatchAccessApi(ctx context.Context, req payload.Reques
 	userInfo := util.GetContext(ctx)
 
 	// validate user type
-	if _, err := s.userEntity.UserTypeRepo.SelectUserTypeByID(req.UserType); err == gorm.ErrRecordNotFound {
+	if _, err := s.userEntity.UserTypeRepo.SelectUserTypeByID(ctx, req.UserType); err == gorm.ErrRecordNotFound {
 		logs.Logging.Warning(ctx, err)
 		return util.ErrorMapping(util.ErrorDataNotFound)
 	} else if err != nil {

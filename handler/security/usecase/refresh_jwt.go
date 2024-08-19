@@ -22,7 +22,7 @@ func (s *securityUseCase) RefreshJWT(ctx context.Context) (res payload.ResponseL
 
 	userInfo := util.GetContext(ctx)
 
-	modelUser, err := s.userEntity.UserRepo.SelectUserByID(userInfo.UserID)
+	modelUser, err := s.userEntity.UserRepo.SelectUserByID(ctx, userInfo.UserID)
 	if err == gorm.ErrRecordNotFound {
 		logs.Logging.Warning(ctx, err)
 		return res, util.ErrorMapping(util.ErrorDataNotFound)

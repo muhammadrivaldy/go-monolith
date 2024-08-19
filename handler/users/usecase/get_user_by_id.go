@@ -3,6 +3,7 @@ package usecase
 import (
 	"backend/handler/users/payload"
 	"backend/logs"
+	"backend/tracer"
 	"backend/util"
 	"context"
 	"errors"
@@ -12,8 +13,11 @@ import (
 
 func (u userUseCase) GetUserByID(ctx context.Context, req payload.RequestGetUserByID) (res payload.ResponseGetUserByID, errs util.Error) {
 
+	ctx, span := tracer.Tracer.Start(ctx, "UseCase: GetUserByID")
+	defer span.End()
+
 	// get user
-	user, err := u.userEntity.UserRepo.SelectUserByID(req.UserID)
+	user, err := u.userEntity.UserRepo.SelectUserByID(ctx, req.UserID)
 	if err == gorm.ErrRecordNotFound {
 		logs.Logging.Warning(ctx, err)
 		return res, util.ErrorMapping(util.ErrorDataNotFound)

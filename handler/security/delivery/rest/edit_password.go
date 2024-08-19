@@ -19,7 +19,7 @@ func (e *endpoint) EditPassword(c *gin.Context) {
 
 	// set payload
 	payload := payload.RequestEditPassword{
-		UserID:   util.StringToInt(c.Param("user_id")),
+		UserID:   util.StringToInt64(c.Param("user_id")),
 		Password: c.PostForm("password"),
 	}
 

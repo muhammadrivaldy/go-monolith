@@ -17,7 +17,7 @@ func (s *securityUseCase) GetAccessApi(ctx context.Context, req payload.RequestG
 	defer span.End()
 
 	// validate user type
-	_, err := s.userEntity.UserTypeRepo.SelectUserTypeByID(req.UserType)
+	_, err := s.userEntity.UserTypeRepo.SelectUserTypeByID(ctx, req.UserType)
 	if err == gorm.ErrRecordNotFound {
 		logs.Logging.Warning(ctx, err)
 		return res, util.ErrorMapping(util.ErrorDataNotFound)
