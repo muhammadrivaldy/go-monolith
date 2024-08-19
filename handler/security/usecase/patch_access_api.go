@@ -32,7 +32,7 @@ func (s *securityUseCase) PatchAccessApi(ctx context.Context, req payload.Reques
 	}
 
 	// get access by user type
-	access, err := s.securityEntity.AccessRepo.SelectAccessByUserType(req.UserType)
+	access, err := s.securityEntity.AccessRepo.SelectAccessByUserType(ctx, req.UserType)
 	if err != nil {
 		logs.Logging.Error(ctx, err)
 		return util.ErrorMapping(err)
@@ -98,7 +98,7 @@ func (s *securityUseCase) PatchAccessApi(ctx context.Context, req payload.Reques
 				CreatedAt:  timeNow,
 			})
 
-			if _, err = s.securityEntity.AccessRepo.InsertAccesses(accesses); err != nil {
+			if _, err = s.securityEntity.AccessRepo.InsertAccesses(ctx, accesses); err != nil {
 				logs.Logging.Error(ctx, err)
 				return util.ErrorMapping(err)
 			}
@@ -107,7 +107,7 @@ func (s *securityUseCase) PatchAccessApi(ctx context.Context, req payload.Reques
 
 	// delete access if exists
 	if len(apiIDToBeDelete) > 0 {
-		if err = s.securityEntity.AccessRepo.DeleteAccessesByUserTypeIDAndApiID(req.UserType, apiIDToBeDelete); err != nil {
+		if err = s.securityEntity.AccessRepo.DeleteAccessesByUserTypeIDAndApiID(ctx, req.UserType, apiIDToBeDelete); err != nil {
 			logs.Logging.Error(ctx, err)
 			return util.ErrorMapping(err)
 		}

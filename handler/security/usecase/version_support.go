@@ -16,7 +16,7 @@ func (s *securityUseCase) VersionSupport(ctx context.Context, req payload.Reques
 	defer span.End()
 
 	// get version
-	version, err := s.securityEntity.VersionRepo.SelectVersionByVersion(req.Version)
+	version, err := s.securityEntity.VersionRepo.SelectVersionByVersion(ctx, req.Version)
 	if err == gorm.ErrRecordNotFound {
 		return payload.ResponseVersionSupport{
 			Version: req.Version,

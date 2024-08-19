@@ -16,7 +16,7 @@ func (s *securityUseCase) GetApisByServiceID(ctx context.Context, req payload.Re
 	defer span.End()
 
 	// validate service id
-	_, err := s.securityEntity.ServiceRepo.SelectServiceByID(req.ServiceID)
+	_, err := s.securityEntity.ServiceRepo.SelectServiceByID(ctx, req.ServiceID)
 	if err == gorm.ErrRecordNotFound {
 		logs.Logging.Warning(ctx, err)
 		return res, util.ErrorMapping(util.ErrorDataNotFound)
@@ -26,7 +26,7 @@ func (s *securityUseCase) GetApisByServiceID(ctx context.Context, req payload.Re
 	}
 
 	// get apis
-	apis, err := s.securityEntity.ApiRepo.SelectApisByServiceID(req.ServiceID)
+	apis, err := s.securityEntity.ApiRepo.SelectApisByServiceID(ctx, req.ServiceID)
 	if err != nil {
 		logs.Logging.Error(ctx, err)
 		return res, util.ErrorMapping(err)

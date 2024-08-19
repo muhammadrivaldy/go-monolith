@@ -27,7 +27,7 @@ func (s *securityUseCase) GetAccessApi(ctx context.Context, req payload.RequestG
 	}
 
 	// get access by user type
-	access, err := s.securityEntity.AccessRepo.SelectAccessByUserType(req.UserType)
+	access, err := s.securityEntity.AccessRepo.SelectAccessByUserType(ctx, req.UserType)
 	if err != nil {
 		logs.Logging.Error(ctx, err)
 		return res, util.ErrorMapping(err)

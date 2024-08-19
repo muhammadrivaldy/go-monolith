@@ -16,7 +16,7 @@ func (s *securityUseCase) RegisterService(ctx context.Context, serviceName strin
 	ctx, span := tracer.Tracer.Start(ctx, "UseCase: RegisterService")
 	defer span.End()
 
-	res, err := s.securityEntity.ServiceRepo.SelectServiceByName(serviceName)
+	res, err := s.securityEntity.ServiceRepo.SelectServiceByName(ctx, serviceName)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		logs.Logging.Error(ctx, err)
 		return id, util.ErrorMapping(err)
@@ -24,7 +24,7 @@ func (s *securityUseCase) RegisterService(ctx context.Context, serviceName strin
 
 	// register service name
 	if res.ID == 0 {
-		res, err = s.securityEntity.ServiceRepo.InsertService(models.Service{
+		res, err = s.securityEntity.ServiceRepo.InsertService(ctx, models.Service{
 			Name:      serviceName,
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now()})

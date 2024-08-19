@@ -23,32 +23,32 @@ type ISecurityUseCase interface {
 }
 
 type IApiRepo interface {
-	InsertApi(req models.Api) (res models.Api, err error)
+	InsertApi(ctx context.Context, req models.Api) (res models.Api, err error)
 	SelectApiByID(ctx context.Context, id string) (res models.Api, err error)
-	SelectApiByName(name string) (res models.Api, err error)
-	SelectApiByEndpoint(endpoint, method string) (res models.Api, err error)
-	SelectApisByServiceID(serviceID int) (res []models.Api, err error)
-	UpdateApi(req models.Api) (res models.Api, err error)
+	SelectApiByName(ctx context.Context, name string) (res models.Api, err error)
+	SelectApiByEndpoint(ctx context.Context, endpoint, method string) (res models.Api, err error)
+	SelectApisByServiceID(ctx context.Context, serviceID int) (res []models.Api, err error)
+	UpdateApi(ctx context.Context, req models.Api) (res models.Api, err error)
 }
 
 type IServiceRepo interface {
-	InsertService(req models.Service) (res models.Service, err error)
-	SelectServiceByID(id int) (res models.Service, err error)
-	SelectServiceByName(name string) (res models.Service, err error)
-	SelectServices() (res []models.Service, err error)
+	InsertService(ctx context.Context, req models.Service) (res models.Service, err error)
+	SelectServiceByID(ctx context.Context, id int) (res models.Service, err error)
+	SelectServiceByName(ctx context.Context, name string) (res models.Service, err error)
+	SelectServices(ctx context.Context) (res []models.Service, err error)
 }
 
 type IAccessRepo interface {
-	InsertAccess(req models.Access) (res models.Access, err error)
-	InsertAccesses(req []models.Access) (res []models.Access, err error)
+	InsertAccess(ctx context.Context, req models.Access) (res models.Access, err error)
+	InsertAccesses(ctx context.Context, req []models.Access) (res []models.Access, err error)
 	SelectAccessByFilter(ctx context.Context, req util.FilterQuery) (res models.Access, err error)
-	SelectAccessByUserType(userTypeID int) (res []models.Access, err error)
-	UpdateAccess(req models.Access) (res models.Access, err error)
-	DeleteAccessesByUserTypeIDAndApiID(userTypeID int, apiID []int) (err error)
+	SelectAccessByUserType(ctx context.Context, userTypeID int) (res []models.Access, err error)
+	UpdateAccess(ctx context.Context, req models.Access) (res models.Access, err error)
+	DeleteAccessesByUserTypeIDAndApiID(ctx context.Context, userTypeID int, apiID []int) (err error)
 }
 
 type IVersionRepo interface {
-	InsertVersion(req models.Version) (res models.Version, err error)
-	SelectVersionByVersion(version string) (res models.Version, err error)
-	UpdateVersion(req models.Version) (res models.Version, err error)
+	InsertVersion(ctx context.Context, req models.Version) (res models.Version, err error)
+	SelectVersionByVersion(ctx context.Context, version string) (res models.Version, err error)
+	UpdateVersion(ctx context.Context, req models.Version) (res models.Version, err error)
 }

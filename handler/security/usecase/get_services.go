@@ -14,7 +14,7 @@ func (s *securityUseCase) GetServices(ctx context.Context) (res []payload.Respon
 	defer span.End()
 
 	// get services
-	services, err := s.securityEntity.ServiceRepo.SelectServices()
+	services, err := s.securityEntity.ServiceRepo.SelectServices(ctx)
 	if err != nil {
 		logs.Logging.Error(ctx, err)
 		return res, util.ErrorMapping(err)
