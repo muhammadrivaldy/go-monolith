@@ -1,71 +1,112 @@
 version: "3.3"
+
 services:
-  db-security:
-    container_name: db-backend-security
+  backend-service:
+    container_name: backend-service
+    image: backend:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    profiles:
+      - backend-service
+    ports:
+      - 80:8082
+    environment:
+      DB_ADDRESS: db-backend
+      DB_USER: root
+      DB_PASSWORD: root
+      REDIS_ADDRESS: redis-backend
+      PATH_CONF: ../config
+      FILE_CONF: local.conf
+      PATH_LOG: ./logs
+    command: ["./main", "false", "service.log", "run-service"]
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-f",
+          "http://localhost:8082/api/v1/security/health/check",
+        ]
+      interval: 5m
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+      start_interval: 5s
+    depends_on:
+      backend-migration:
+        condition: service_healthy
+
+  backend-migration:
+    container_name: backend-migration
+    image: backend:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    profiles:
+      - backend-migration
+    environment:
+      DB_ADDRESS: db-backend
+      DB_USER: root
+      DB_PASSWORD: root
+      REDIS_ADDRESS: redis-backend
+      PATH_CONF: ../config
+      FILE_CONF: local.conf
+      PATH_LOG: ./logs
+    command: sleep infinity
+    healthcheck:
+      test: ./main false service.log run-migration
+      interval: 5m
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+      start_interval: 5s
+    depends_on:
+      db-backend:
+        condition: service_healthy
+      redis-backend:
+        condition: service_healthy
+
+  db-backend:
+    container_name: db-backend
     image: mysql:8.0.33
     command: --default-authentication-plugin=mysql_native_password
-    restart: always
+    platform: linux/amd64
+    profiles:
+      - dependencies
     ports:
       - 3306:3306
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: security
-    volumes:
-      - mysql-backend-security:/var/lib/mysql
-    networks:
-      - server-side
+      MYSQL_DATABASE: db-backend
+    healthcheck:
+      test: mysql --user=root --password=root --execute='show databases'
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+      start_interval: 5s
 
-  db-users:
-    container_name: db-backend-users
-    image: mysql:8.0.33
-    command: --default-authentication-plugin=mysql_native_password
-    restart: always
-    ports:
-      - 3310:3306
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: users
-    volumes:
-      - mysql-backend-users:/var/lib/mysql
-    networks:
-      - server-side
-
-  # backend:
-  #   container_name: backend-service
-  #   image: backend:latest
-  #   restart: always
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - 8080:8080
-  #   environment:
-  #     DB_ADDRESS: db
-  #     DB_USER: root
-  #     DB_PASSWORD: root
-  #     PATH_CONF: ../config
-  #     FILE_CONF: local.conf
-  #   depends_on:
-  #     - db
-  #     - adminer
-  #     - redis
-  #   networks:
-  #     - server-side
-
-  redis:
+  redis-backend:
     container_name: redis-backend
     image: redis:6.2.4
-    restart: always
+    platform: linux/amd64
+    profiles:
+      - dependencies
     ports:
       - 6379:6379
-    volumes:
-      - redis-backend:/data
-    networks:
-      - server-side
+    healthcheck:
+      test: redis-cli ping
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+      start_interval: 5s
 
   swagger-ui:
     container_name: swagger-ui
     image: swaggerapi/swagger-ui
+    platform: linux/amd64
     restart: always
     volumes:
       - ./docs/openapi:/openapi
@@ -74,10 +115,18 @@ services:
     environment:
       SWAGGER_JSON: /openapi/swagger.yaml
 
-networks:
-  server-side:
-
-volumes:
-  mysql-backend-security:
-  mysql-backend-users:
-  redis-backend:
+  integration-tests:
+    container_name: integration-tests
+    image: golang:1.21-alpine
+    profiles:
+      - integration-tests
+    command: sh -c "cd /go/src/backend && go test backend/tests/integration -v"
+    volumes:
+      - ./:/go/src/backend
+    environment:
+      SERVICE_ADDRESS: backend-service:8082
+    depends_on:
+      backend-service:
+        condition: service_healthy
+      backend-migration:
+        condition: service_healthy

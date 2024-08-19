@@ -41,6 +41,7 @@ func NewEndpoint(
 
 	// declare the endpoint
 	const rootEndpoint = "/api/v1/security"
+	var healthCheck = payload.RequestRegisterApi{ID: "1896f8c0-d774-43e5-9cb6-1421a3b85a78", Name: "Health Check", Endpoint: rootEndpoint + "/health/check", Method: http.MethodGet, ServiceID: serviceID}
 	var login = payload.RequestRegisterApi{ID: "9e9de361-a468-4251-a25b-23995477695f", Name: "Login", Endpoint: rootEndpoint + "/login", Method: http.MethodPost, ServiceID: serviceID}
 	var refreshJwt = payload.RequestRegisterApi{ID: "71597833-0501-4ff1-9252-3cca6bacaa20", Name: "Refresh JWT", Endpoint: rootEndpoint + "/refresh", Method: http.MethodPost, ServiceID: serviceID}
 	var getAccessApi = payload.RequestRegisterApi{ID: "3227b75a-1c52-401d-95b3-15ab62301b4b", Name: "Get Access Api", Endpoint: rootEndpoint + "/accesses/users/:user_type", Method: http.MethodGet, ServiceID: serviceID}
@@ -53,6 +54,7 @@ func NewEndpoint(
 	// append data apis
 	var Apis []*payload.RequestRegisterApi
 	Apis = append(Apis,
+		&healthCheck,
 		&login,
 		&refreshJwt,
 		&getAccessApi,
@@ -71,6 +73,7 @@ func NewEndpoint(
 	middleware := middleware.NewMiddleware(useCaseUser, useCaseSecurity)
 
 	// route the endpoint
+	engine.Handle(healthCheck.Method, healthCheck.Endpoint, edp.HealthCheck)
 	engine.Handle(login.Method, login.Endpoint, edp.Login)
 	engine.Handle(refreshJwt.Method, refreshJwt.Endpoint, goutil.ParseJWT(config.JWTKey, jwt.SigningMethodHS256, util.AttributesJWT), middleware.ValidateAccess(refreshJwt.ID), edp.RefreshJWT)
 	engine.Handle(getAccessApi.Method, getAccessApi.Endpoint, goutil.ParseJWT(config.JWTKey, jwt.SigningMethodHS256, util.AttributesJWT), middleware.ValidateAccess(getAccessApi.ID), edp.GetAccessApi)

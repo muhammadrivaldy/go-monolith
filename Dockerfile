@@ -1,6 +1,6 @@
-FROM golang:1.17-alpine AS builder
+FROM golang:1.21-alpine AS builder
 
-WORKDIR /src/backend
+WORKDIR /src/laundry
 COPY . .
 
 ENV GO111MODULE=on
@@ -10,11 +10,10 @@ RUN cd app && go build -o main
 
 FROM alpine:latest
 
-COPY --from=builder /src/backend/app /src/backend/app
-COPY --from=builder /src/backend/config /src/backend/config
+RUN apk update && apk add curl
 
-WORKDIR /src/backend/app
+COPY --from=builder /src/laundry/app /src/laundry/app
+COPY --from=builder /src/laundry/config /src/laundry/config
+COPY --from=builder /src/laundry/migrations /src/laundry/migrations
 
-EXPOSE 8080
-
-CMD ["./main"]
+WORKDIR /src/laundry/app
