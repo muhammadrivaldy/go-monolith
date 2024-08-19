@@ -2,25 +2,31 @@ package usecase
 
 import (
 	"backend/logs"
+	"backend/tracer"
 	"backend/util"
 	"context"
 
-	goutil "github.com/muhammadrivaldy/go-util"
+	"gorm.io/gorm"
 )
 
-func (s *securityUseCase) ValidateAccessUser(ctx context.Context, apiId int64) (res bool, errs util.Error) {
+func (s *securityUseCase) ValidateAccessUser(ctx context.Context, apiId string) (res bool, errs util.Error) {
 
-	userInfo := goutil.GetContext(ctx)
+	ctx, span := tracer.Tracer.Start(ctx, "UseCase: ValidateAccessUser")
+	defer span.End()
+
+	userInfo := util.GetContext(ctx)
 
 	// prepare a filter
 	filter := util.FilterQuery{}
 	filter.Conditions = append(filter.Conditions, util.Condition{Field: "api_id", Operation: "=", Value: apiId})
 	filter.Conditions = append(filter.Conditions, util.Condition{Operation: "and"})
-	filter.Conditions = append(filter.Conditions, util.Condition{Field: "user_type_id", Operation: "=", Value: userInfo.GroupId})
+	filter.Conditions = append(filter.Conditions, util.Condition{Field: "user_type_id", Operation: "=", Value: userInfo.UserType})
 
 	// check access of user
-	_, err := s.securityEntity.AccessRepo.SelectAccessByFilter(filter)
-	if err != nil {
+	_, err := s.securityEntity.AccessRepo.SelectAccessByFilter(ctx, filter)
+	if err == gorm.ErrRecordNotFound {
+		return false, util.ErrorMapping(util.ErrorUserDoesNotHaveAuthorization)
+	} else if err != nil {
 		logs.Logging.Error(ctx, err)
 		return false, util.ErrorMapping(err)
 	}

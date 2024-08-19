@@ -11,7 +11,7 @@ import (
 type ISecurityUseCase interface {
 	RegisterApi(ctx context.Context, req *payload.RequestRegisterApi)
 	RegisterService(ctx context.Context, serviceName string) (id int64, errs util.Error)
-	ValidateAccessUser(ctx context.Context, apiId int64) (res bool, errs util.Error)
+	ValidateAccessUser(ctx context.Context, apiId string) (res bool, errs util.Error)
 	Login(ctx context.Context, req payload.RequestLogin) (res payload.ResponseLogin, errs util.Error)
 	RefreshJWT(ctx context.Context) (res payload.ResponseLogin, errs util.Error)
 	GetAccessApi(ctx context.Context, req payload.RequestGetAccessApi) (res payload.ResponseGetAccessApi, errs util.Error)
@@ -19,11 +19,12 @@ type ISecurityUseCase interface {
 	GetServices(ctx context.Context) (res []payload.ResponseGetServices, errs util.Error)
 	GetApisByServiceId(ctx context.Context, req payload.RequestGetApisServiceId) (res []payload.ResponseGetApisServiceId, errs util.Error)
 	VersionSupport(ctx context.Context, req payload.RequestVersionSupport) (res payload.ResponseVersionSupport, errs util.Error)
-	UpdatePassword(ctx context.Context, req payload.RequestUpdatePassword) (errs util.Error)
+	EditPassword(ctx context.Context, req payload.RequestEditPassword) (errs util.Error)
 }
 
 type IApiRepo interface {
 	InsertApi(req models.Api) (res models.Api, err error)
+	SelectApiByID(ctx context.Context, id string) (res models.Api, err error)
 	SelectApiByName(name string) (res models.Api, err error)
 	SelectApiByEndpoint(endpoint, method string) (res models.Api, err error)
 	SelectApisByServiceId(serviceId int) (res []models.Api, err error)
@@ -40,7 +41,7 @@ type IServiceRepo interface {
 type IAccessRepo interface {
 	InsertAccess(req models.Access) (res models.Access, err error)
 	InsertAccesses(req []models.Access) (res []models.Access, err error)
-	SelectAccessByFilter(req util.FilterQuery) (res models.Access, err error)
+	SelectAccessByFilter(ctx context.Context, req util.FilterQuery) (res models.Access, err error)
 	SelectAccessByUserType(userTypeId int) (res []models.Access, err error)
 	UpdateAccess(req models.Access) (res models.Access, err error)
 	DeleteAccessesByUserTypeIdAndApiId(userTypeId int, apiId []int) (err error)

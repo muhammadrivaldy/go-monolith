@@ -16,8 +16,8 @@ func (e endpoint) GetAccessApi(c *gin.Context) {
 	payload := payload.RequestGetAccessApi{UserType: util.StringToInt(c.Param("user_type"))}
 
 	// validate
-	if err := e.validation.ValidationStruct(payload); err != nil {
-		goutil.ResponseError(c, http.StatusBadRequest, util.ErrorIncorrectInput, nil)
+	if validationErrors := e.validation.ValidationStruct(payload); validationErrors.IsErrorExists() {
+		goutil.ResponseError(c, http.StatusBadRequest, util.ErrorIncorrectInput, validationErrors)
 		return
 	}
 

@@ -3,15 +3,20 @@ package main
 import (
 	"backend/config"
 	"backend/logs"
+	"backend/tracer"
 	"context"
 	"fmt"
 	"io"
 	"os"
 	"strconv"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
 	goutil "github.com/muhammadrivaldy/go-util"
+	"github.com/uptrace/uptrace-go/uptrace"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
+	"go.opentelemetry.io/otel"
 )
 
 const (
@@ -27,9 +32,12 @@ func main() {
 	fileConfig := os.Getenv(fileConfigEnv)
 	pathLog := os.Getenv(pathLogEnv)
 
-	// get argument
-	argument := os.Args[1]
-	createOutputLog, _ := strconv.ParseBool(argument)
+	// get parameters
+	outputLogArgument := os.Args[1]
+	filenameLogArgument := os.Args[2]
+	serviceDo := os.Args[3]
+
+	createOutputLog, _ := strconv.ParseBool(outputLogArgument)
 
 	// declare variable
 	var err error
@@ -39,7 +47,7 @@ func main() {
 	if createOutputLog {
 
 		defer osLog.Close()
-		osLog, err = goutil.OpenFile(pathLog, "service.log")
+		osLog, err = goutil.OpenFile(pathLog, filenameLogArgument)
 		if err != nil {
 			panic(err)
 		}
@@ -56,13 +64,13 @@ func main() {
 	defer osFile.Close()
 
 	// get config
-	var config config.Configuration
-	if err := goutil.Configuration(osFile, &config); err != nil {
+	var configuration config.Configuration
+	if err := goutil.Configuration(osFile, &configuration); err != nil {
 		panic(err)
 	}
 
 	// third-party telegram
-	telegram, _ := goutil.NewTele(config.ThirdParty.Telegram.Token, config.ThirdParty.Telegram.ChatId)
+	telegram, _ := goutil.NewTele(configuration.ThirdParty.Telegram.Token, configuration.ThirdParty.Telegram.ChatId)
 
 	// logs service
 	logs.Logging, err = goutil.NewLog(osLog, telegram, createOutputLog)
@@ -73,10 +81,52 @@ func main() {
 	defer logs.Logging.Sync()
 	defer logs.Logging.Undo()
 
+	// set config to public variable
+	config.Config = configuration
+
+	switch serviceDo {
+	case "run-service":
+		runService(configuration)
+	case "run-migration":
+		runMigration(configuration)
+	default:
+		panic("unexpected service do")
+	}
+}
+
+func runMigration(config config.Configuration) {
+
+	databaseMigration(config)
+}
+
+func runService(config config.Configuration) {
+
+	// declare variable
+	var err error
+
+	// run apm
+	uptrace.ConfigureOpentelemetry(
+		uptrace.WithDSN(config.Uptrace.DSN),
+		uptrace.WithServiceName(config.Uptrace.ServiceName),
+		uptrace.WithDeploymentEnvironment(config.Uptrace.Environment),
+	)
+
+	defer uptrace.Shutdown(context.Background())
+
+	// set up tracer
+	tracer.Tracer = otel.Tracer(fmt.Sprintf("%s %s", config.Uptrace.ServiceName, config.Uptrace.Environment))
+
+	// cors set up
+	corsConfig := cors.DefaultConfig()
+	corsConfig.AllowAllOrigins = true
+	corsConfig.AllowHeaders = []string{"*"}
+
 	// call gin route
 	route := gin.New()
 	route.Use(gin.Recovery())
+	route.Use(cors.New(corsConfig))
 	route.Use(requestid.New())
+	route.Use(otelgin.Middleware(config.Uptrace.ServiceName))
 	route.Use(goutil.SetContext)
 	route.Use(goutil.LogMiddleware(logs.Logging))
 
@@ -87,7 +137,11 @@ func main() {
 	}
 
 	// static route
-	route.Static("/swagger/", "../docs/openapi")
+	route.StaticFile("/privacy", "./../privacy_policy.html")
+	route.Static(fmt.Sprintf("/swagger/%s", config.SwaggerAPIKey), "../docs/openapi")
+	route.GET("/.well-known/assetlinks.json", func(ctx *gin.Context) {
+		ctx.File("../assets/assetlinks.json")
+	})
 
 	// running the service
 	service(route, config, validate)

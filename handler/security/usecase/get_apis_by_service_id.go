@@ -30,7 +30,7 @@ func (s *securityUseCase) GetApisByServiceId(ctx context.Context, req payload.Re
 
 	for _, i := range apis {
 		res = append(res, payload.ResponseGetApisServiceId{
-			ApiId:    int(i.Id),
+			ApiId:    i.Id,
 			ApiName:  i.Name,
 			Method:   i.Method,
 			Endpoint: i.Endpoint,

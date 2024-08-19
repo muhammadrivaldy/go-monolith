@@ -33,7 +33,7 @@ func (a accessRepo) InsertAccesses(req []models.Access) (res []models.Access, er
 	return
 }
 
-func (a accessRepo) SelectAccessByFilter(req util.FilterQuery) (res models.Access, err error) {
+func (a accessRepo) SelectAccessByFilter(ctx context.Context, req util.FilterQuery) (res models.Access, err error) {
 
 	query, _, arguments := req.BuildQuery()
 

@@ -1,5 +1,7 @@
 package config
 
+var Config Configuration
+
 // Configuration is a object configuration
 type Configuration struct {
 	Port     int    `json:"port" env:"PORT"`

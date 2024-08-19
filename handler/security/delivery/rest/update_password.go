@@ -10,17 +10,17 @@ import (
 	goutil "github.com/muhammadrivaldy/go-util"
 )
 
-func (e *endpoint) UpdatePassword(c *gin.Context) {
+func (e *endpoint) EditPassword(c *gin.Context) {
 
 	// set payload
-	payload := payload.RequestUpdatePassword{
+	payload := payload.RequestEditPassword{
 		UserId:   util.StringToInt(c.Param("user_id")),
 		Password: c.PostForm("password"),
 	}
 
 	// validate payload
-	if err := e.validation.ValidationStruct(payload); err != nil {
-		goutil.ResponseError(c, http.StatusBadRequest, util.ErrorIncorrectInput, nil)
+	if validationErrors := e.validation.ValidationStruct(payload); validationErrors.IsErrorExists() {
+		goutil.ResponseError(c, http.StatusBadRequest, util.ErrorIncorrectInput, validationErrors)
 		return
 	}
 
@@ -28,7 +28,7 @@ func (e *endpoint) UpdatePassword(c *gin.Context) {
 
 	// call service
 	response, errs := middleware.WrapUseCase(ctx, payload, func() (interface{}, util.Error) {
-		errs := e.useCaseSecurity.UpdatePassword(ctx, payload)
+		errs := e.useCaseSecurity.EditPassword(ctx, payload)
 		return nil, errs
 	})
 	if errs.IsError() {

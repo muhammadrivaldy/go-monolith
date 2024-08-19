@@ -18,8 +18,8 @@ func (e *endpoint) VersionSupport(c *gin.Context) {
 	}
 
 	// validate payload
-	if err := e.validation.ValidationStruct(payload); err != nil {
-		goutil.ResponseError(c, http.StatusBadRequest, err, nil)
+	if validationErrors := e.validation.ValidationStruct(payload); validationErrors.IsErrorExists() {
+		goutil.ResponseError(c, http.StatusBadRequest, util.ErrorIncorrectInput, validationErrors)
 		return
 	}
 

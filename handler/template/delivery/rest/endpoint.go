@@ -44,7 +44,7 @@ func NewEndpoint(
 
 	// declare the endpoint
 	const rootEndpoint = "/api/v1/templates"
-	var createTemplate = payload.RequestRegisterApi{Name: "Create Template", Endpoint: rootEndpoint + "/", Method: http.MethodPost, ServiceID: serviceID}
+	var createTemplate = payload.RequestRegisterApi{ID: "", Name: "Create Template", Endpoint: rootEndpoint + "/", Method: http.MethodPost, ServiceID: serviceID}
 
 	// append data apis
 	var APIs []*payload.RequestRegisterApi
@@ -60,7 +60,7 @@ func NewEndpoint(
 
 	// route the endpoint
 	engine.Use(util.EnableCORS)
-	engine.Handle(createTemplate.Method, createTemplate.Endpoint, goutil.ParseJWT(config.JWTKey, jwt.SigningMethodHS256), middleware.ValidateAccess(createTemplate.ID), func(ctx *gin.Context) {})
+	engine.Handle(createTemplate.Method, createTemplate.Endpoint, goutil.ParseJWT(config.JWTKey, jwt.SigningMethodHS256, util.AttributesJWT), middleware.ValidateAccess(createTemplate.ID), func(ctx *gin.Context) {})
 
 	// send result
 	return nil

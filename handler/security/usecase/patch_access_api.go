@@ -10,14 +10,13 @@ import (
 	"sort"
 	"time"
 
-	goutil "github.com/muhammadrivaldy/go-util"
 	"gorm.io/gorm"
 )
 
 func (s *securityUseCase) PatchAccessApi(ctx context.Context, req payload.RequestPatchAccessApi) (errs util.Error) {
 
 	// get info
-	userInfo := goutil.GetContext(ctx)
+	userInfo := util.GetContext(ctx)
 
 	// validate user type
 	if _, err := s.userEntity.UserTypeRepo.SelectUserTypeById(req.UserType); err == gorm.ErrRecordNotFound {

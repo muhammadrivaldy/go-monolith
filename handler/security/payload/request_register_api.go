@@ -1,7 +1,7 @@
 package payload
 
 type RequestRegisterApi struct {
-	ID        int64
+	ID        string
 	Name      string
 	Endpoint  string
 	Method    string
