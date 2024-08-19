@@ -103,8 +103,8 @@ services:
       start_period: 15s
       start_interval: 5s
 
-  swagger-ui:
-    container_name: swagger-ui
+  backend-api-contract:
+    container_name: backend-api-contract
     image: swaggerapi/swagger-ui
     platform: linux/amd64
     restart: always
