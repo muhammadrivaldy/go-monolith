@@ -2,6 +2,7 @@ package rest
 
 import (
 	"backend/middleware"
+	"backend/tracer"
 	"backend/util"
 	"net/http"
 
@@ -12,6 +13,8 @@ import (
 func (e endpoint) GetServices(c *gin.Context) {
 
 	ctx := goutil.ParseContext(c)
+	ctx, span := tracer.Tracer.Start(ctx, "REST: GetServices")
+	defer span.End()
 
 	// call services
 	res, errs := middleware.WrapUseCase(ctx, nil, func() (interface{}, util.Error) {

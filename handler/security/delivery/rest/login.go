@@ -3,6 +3,7 @@ package rest
 import (
 	"backend/handler/security/payload"
 	"backend/middleware"
+	"backend/tracer"
 	"backend/util"
 	"net/http"
 
@@ -11,6 +12,10 @@ import (
 )
 
 func (e *endpoint) Login(c *gin.Context) {
+
+	ctx := goutil.ParseContext(c)
+	ctx, span := tracer.Tracer.Start(ctx, "REST: Login")
+	defer span.End()
 
 	email, password, _ := c.Request.BasicAuth()
 
@@ -25,8 +30,6 @@ func (e *endpoint) Login(c *gin.Context) {
 		goutil.ResponseError(c, http.StatusBadRequest, util.ErrorIncorrectInput, validationErrors)
 		return
 	}
-
-	ctx := goutil.ParseContext(c)
 
 	// call service
 	response, errs := middleware.WrapUseCase(ctx, payload, func() (interface{}, util.Error) {

@@ -3,6 +3,7 @@ package rest
 import (
 	"backend/handler/security/payload"
 	"backend/middleware"
+	"backend/tracer"
 	"backend/util"
 	"net/http"
 
@@ -12,6 +13,10 @@ import (
 
 func (e endpoint) PatchAccessApi(c *gin.Context) {
 
+	ctx := goutil.ParseContext(c)
+	ctx, span := tracer.Tracer.Start(ctx, "REST: PatchAccessApi")
+	defer span.End()
+
 	// bind payload
 	payload := payload.RequestPatchAccessApi{}
 	if err := c.Bind(&payload); err != nil {
@@ -20,8 +25,6 @@ func (e endpoint) PatchAccessApi(c *gin.Context) {
 	}
 
 	payload.UserType = util.StringToInt(c.Param("user_type"))
-
-	ctx := goutil.ParseContext(c)
 
 	// call service
 	_, errs := middleware.WrapUseCase(ctx, payload, func() (interface{}, util.Error) {

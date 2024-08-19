@@ -2,6 +2,7 @@ package rest
 
 import (
 	"backend/middleware"
+	"backend/tracer"
 	"backend/util"
 	"net/http"
 
@@ -12,6 +13,8 @@ import (
 func (e *endpoint) RefreshJWT(c *gin.Context) {
 
 	ctx := goutil.ParseContext(c)
+	ctx, span := tracer.Tracer.Start(ctx, "REST: RefreshJWT")
+	defer span.End()
 
 	res, errs := middleware.WrapUseCase(ctx, nil, func() (interface{}, util.Error) {
 		return e.useCaseSecurity.RefreshJWT(ctx)
