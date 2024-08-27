@@ -12,10 +12,10 @@ services:
     ports:
       - 80:8082
     environment:
-      DB_ADDRESS: db-backend
+      DB_ADDRESS: backend-db
       DB_USER: root
       DB_PASSWORD: root
-      REDIS_ADDRESS: redis-backend
+      REDIS_ADDRESS: backend-redis
       PATH_CONF: ../config
       FILE_CONF: local.conf
       PATH_LOG: ./logs
@@ -46,10 +46,10 @@ services:
     profiles:
       - backend-migration
     environment:
-      DB_ADDRESS: db-backend
+      DB_ADDRESS: backend-db
       DB_USER: root
       DB_PASSWORD: root
-      REDIS_ADDRESS: redis-backend
+      REDIS_ADDRESS: backend-redis
       PATH_CONF: ../config
       FILE_CONF: local.conf
       PATH_LOG: ./logs
@@ -62,13 +62,13 @@ services:
       start_period: 5s
       start_interval: 5s
     depends_on:
-      db-backend:
+      backend-db:
         condition: service_healthy
-      redis-backend:
+      backend-redis:
         condition: service_healthy
 
-  db-backend:
-    container_name: db-backend
+  backend-db:
+    container_name: backend-db
     image: mysql:8.0.33
     command: --default-authentication-plugin=mysql_native_password
     platform: linux/amd64
@@ -78,7 +78,7 @@ services:
       - 3306:3306
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: db-backend
+      MYSQL_DATABASE: backend-db
     healthcheck:
       test: mysql --user=root --password=root --execute='show databases'
       interval: 30s
@@ -87,8 +87,8 @@ services:
       start_period: 15s
       start_interval: 5s
 
-  redis-backend:
-    container_name: redis-backend
+  backend-redis:
+    container_name: backend-redis
     image: redis:6.2.4
     platform: linux/amd64
     profiles:

@@ -1,1 +1,0 @@
-INSERT INTO mst_access (id, user_type_id, api_id, created_at, updated_at) SELECT 1, 1, id, now(), now() FROM mst_api WHERE `name` = 'Refresh JWT';
