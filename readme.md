@@ -15,7 +15,7 @@ Let's define the purpose of packages inside of the domain:
 First of all, this step-by-step is for user with linux / mac os only. If you are windows user you need to configure several things by yourself. After that, let's follow this guide:
 
 1. Make sure you already install Golang
-2. Make sure you already have a docker
+2. Make sure you already have a Docker
 3. Make sure you already installed <https://github.com/codegangsta/gin>
 4. Copy the `.env_backup` and paste it as `.env`
 5. Running this command `source .env`
