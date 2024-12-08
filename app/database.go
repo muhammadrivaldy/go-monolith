@@ -70,7 +70,12 @@ func databaseMigration(conf config.Configuration) error {
 	}
 
 	// do a migration up
-	return m.Up()
+	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+		logs.Logging.Error(context.Background(), err)
+		return err
+	}
+
+	return nil
 }
 
 func redisClient(conf config.Configuration) *redis.Client {

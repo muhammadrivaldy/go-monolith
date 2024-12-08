@@ -96,7 +96,9 @@ func main() {
 
 func runMigration(config config.Configuration) {
 
-	databaseMigration(config)
+	if err := databaseMigration(config); err == nil {
+		logs.Logging.Info(context.Background(), "Successfully run the migration")
+	}
 }
 
 func runService(config config.Configuration) {
