@@ -1,5 +1,5 @@
 package payload
 
 type ResponseGetAccessApi struct {
-	ApiID []int `json:"api_id"`
+	ApiID []string `json:"api_id"`
 }

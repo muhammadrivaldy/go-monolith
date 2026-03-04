@@ -38,50 +38,39 @@ func (s *securityUseCase) PatchAccessApi(ctx context.Context, req payload.Reques
 		return util.ErrorMapping(err)
 	}
 
-	apiID := []int{}
+	apiID := []string{}
 	for _, i := range access {
 		apiID = append(apiID, i.ApiID)
 	}
 
-	sort.Ints(apiID)
-	sort.Ints(req.ApiID)
+	sort.Strings(apiID)
+	sort.Strings(req.ApiID)
 
 	logs.Logging.Info(ctx, fmt.Sprintf("%+v", req.ApiID))
 
-	apiIDToBeInsert := []int{}
-	apiIDToBeDelete := []int{}
+	apiIDToBeInsert := []string{}
+	apiIDToBeDelete := []string{}
 
-	if len(apiID) == 0 {
+	currentAccessMap := map[string]struct{}{}
+	for _, id := range apiID {
+		currentAccessMap[id] = struct{}{}
+	}
 
-		apiIDToBeInsert = append(apiIDToBeInsert, req.ApiID...)
+	requestedAccessMap := map[string]struct{}{}
+	for _, id := range req.ApiID {
+		requestedAccessMap[id] = struct{}{}
+	}
 
-	} else if len(req.ApiID) == 0 {
-
-		apiIDToBeDelete = append(apiIDToBeDelete, apiID...)
-
-	} else {
-
-		for i := 0; i < len(apiID); i++ {
-			idx, _, exists := util.SearchIntInArray(apiID[i], req.ApiID)
-			if exists {
-				temp := req.ApiID[:idx]
-				temp = append(temp, req.ApiID[idx+1:]...)
-				req.ApiID = temp
-			} else {
-				apiIDToBeDelete = append(apiIDToBeDelete, apiID[i])
-				temp := apiID[:i]
-				temp = append(temp, apiID[i+1:]...)
-				apiID = temp
-				i--
-			}
-
-			if (len(apiID) - 1) == i {
-				if len(req.ApiID) > 0 {
-					apiIDToBeInsert = append(apiIDToBeInsert, req.ApiID...)
-				}
-			}
+	for id := range requestedAccessMap {
+		if _, exists := currentAccessMap[id]; !exists {
+			apiIDToBeInsert = append(apiIDToBeInsert, id)
 		}
+	}
 
+	for id := range currentAccessMap {
+		if _, exists := requestedAccessMap[id]; !exists {
+			apiIDToBeDelete = append(apiIDToBeDelete, id)
+		}
 	}
 
 	// get time now
@@ -97,11 +86,11 @@ func (s *securityUseCase) PatchAccessApi(ctx context.Context, req payload.Reques
 				CreatedBy:  userInfo.UserID,
 				CreatedAt:  timeNow,
 			})
+		}
 
-			if _, err = s.securityEntity.AccessRepo.InsertAccesses(ctx, accesses); err != nil {
-				logs.Logging.Error(ctx, err)
-				return util.ErrorMapping(err)
-			}
+		if _, err = s.securityEntity.AccessRepo.InsertAccesses(ctx, accesses); err != nil {
+			logs.Logging.Error(ctx, err)
+			return util.ErrorMapping(err)
 		}
 	}
 

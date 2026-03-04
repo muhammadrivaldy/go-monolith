@@ -45,7 +45,7 @@ func (a accessRepo) SelectAccessByFilter(ctx context.Context, req util.FilterQue
 
 	query, _, arguments := req.BuildQuery()
 
-	result, _ := a.redis.Get(context.Background(), fmt.Sprintf("select-access:%s", fmt.Sprintf("api-id:%d_user-type:%d", arguments...))).Bytes()
+	result, _ := a.redis.Get(context.Background(), fmt.Sprintf("select-access:%s", fmt.Sprintf("api-id:%v_user-type:%v", arguments...))).Bytes()
 
 	if result == nil {
 
@@ -55,7 +55,7 @@ func (a accessRepo) SelectAccessByFilter(ctx context.Context, req util.FilterQue
 
 		result, _ = json.Marshal(res)
 
-		a.redis.Set(context.Background(), fmt.Sprintf("select-access:%s", fmt.Sprintf("api-id:%d_user-type:%d", arguments...)), result, 1*time.Minute)
+		a.redis.Set(context.Background(), fmt.Sprintf("select-access:%s", fmt.Sprintf("api-id:%v_user-type:%v", arguments...)), result, 1*time.Minute)
 
 		return
 	}
@@ -82,7 +82,7 @@ func (a accessRepo) SelectAccessByUserType(ctx context.Context, userTypeID int) 
 	return
 }
 
-func (a accessRepo) DeleteAccessesByUserTypeIDAndApiID(ctx context.Context, userTypeID int, apiID []int) (err error) {
+func (a accessRepo) DeleteAccessesByUserTypeIDAndApiID(ctx context.Context, userTypeID int, apiID []string) (err error) {
 	_, span := tracer.Tracer.Start(ctx, "Database: DeleteAccessesByUserTypeIDAndApiID")
 	defer span.End()
 	err = a.dbGorm.Where("user_type_id = ? and api_id in (?)", userTypeID, apiID).Delete(&models.Access{}).Error

@@ -44,7 +44,7 @@ type IAccessRepo interface {
 	SelectAccessByFilter(ctx context.Context, req util.FilterQuery) (res models.Access, err error)
 	SelectAccessByUserType(ctx context.Context, userTypeID int) (res []models.Access, err error)
 	UpdateAccess(ctx context.Context, req models.Access) (res models.Access, err error)
-	DeleteAccessesByUserTypeIDAndApiID(ctx context.Context, userTypeID int, apiID []int) (err error)
+	DeleteAccessesByUserTypeIDAndApiID(ctx context.Context, userTypeID int, apiID []string) (err error)
 }
 
 type IVersionRepo interface {

@@ -35,11 +35,11 @@ func (s *securityUseCase) GetAccessApi(ctx context.Context, req payload.RequestG
 
 	// mapping api id to response
 	for _, i := range access {
-		res.ApiID = append(res.ApiID, int(i.ApiID))
+		res.ApiID = append(res.ApiID, i.ApiID)
 	}
 
 	// sorting elements
-	sort.Ints(res.ApiID)
+	sort.Strings(res.ApiID)
 
 	// response
 	return
